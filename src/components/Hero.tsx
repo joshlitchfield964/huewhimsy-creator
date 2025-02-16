@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { MoveDown } from "lucide-react";
 
@@ -8,7 +7,7 @@ export const Hero = () => {
   };
 
   return (
-    <div className="relative min-h-[90vh] flex items-center justify-center overflow-hidden bg-secondary">
+    <div className="relative min-h-[90vh] flex items-center justify-center overflow-hidden bg-secondary mt-8 md:mt-0">
       <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-white/80 z-0" />
       <div className="container mx-auto px-4 z-10">
         <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
