@@ -13,12 +13,19 @@ export const Hero = () => {
       <div className="container mx-auto px-4 z-10">
         <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
           <div className="text-left max-w-2xl space-y-8 animate-fade-down">
-            <h1 className="font-display text-5xl md:text-7xl font-bold text-primary">
-              Transform Words into
-              <span className="block mt-2">Beautiful Coloring Pages</span>
+            <h1 className="font-display text-5xl md:text-7xl font-bold">
+              Transform{" "}
+              <span className="text-pink-500">Words</span> into
+              <span className="block mt-2">
+                Beautiful{" "}
+                <span className="text-purple-500">Coloring</span>{" "}
+                <span className="text-blue-500">Pages</span>
+              </span>
             </h1>
             <p className="text-lg md:text-xl text-gray-600">
-              Create unique coloring pages from your imagination. Simply describe what you want, and watch as AI brings your vision to life.
+              Create <span className="text-orange-500 font-semibold">unique</span> coloring pages from your{" "}
+              <span className="text-green-500 font-semibold">imagination</span>. Simply describe what you want, and watch as{" "}
+              <span className="text-purple-500 font-semibold">AI</span> brings your vision to life.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <Button
@@ -41,7 +48,7 @@ export const Hero = () => {
           </div>
           <div className="w-full max-w-md lg:max-w-xl animate-fade-up">
             <img
-              src="/lovable-uploads/01744239-5059-4c02-9cc2-393ec1b9c3fa.png"
+              src="/lovable-uploads/6eeb0c41-2def-4dd9-a76f-ced53b7f7cbb.png"
               alt="Coloring page creator illustration"
               className="w-full h-auto"
             />

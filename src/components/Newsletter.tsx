@@ -21,12 +21,15 @@ export const Newsletter = () => {
     <div className="py-20 bg-secondary">
       <div className="container mx-auto px-4">
         <div className="max-w-2xl mx-auto text-center space-y-8 animate-fade-up">
-          <h2 className="font-display text-4xl font-bold text-primary">
-            Get Weekly Inspiration
+          <h2 className="font-display text-4xl font-bold">
+            Get Weekly{" "}
+            <span className="text-purple-500">Inspiration</span>
           </h2>
           <p className="text-gray-600">
-            Subscribe to receive our top weekly coloring pages and creative
-            inspiration directly in your inbox.
+            Subscribe to receive our top weekly{" "}
+            <span className="text-pink-500 font-semibold">coloring pages</span> and{" "}
+            <span className="text-blue-500 font-semibold">creative inspiration</span>{" "}
+            directly in your inbox.
           </p>
           <form onSubmit={handleSubmit} className="flex gap-2 max-w-md mx-auto">
             <Input

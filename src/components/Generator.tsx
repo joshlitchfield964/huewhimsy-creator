@@ -84,11 +84,15 @@ export const Generator = () => {
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto space-y-8 animate-fade-up">
           <div className="text-center space-y-4">
-            <h2 className="font-display text-4xl font-bold text-primary">
-              Create Your Coloring Page
+            <h2 className="font-display text-4xl font-bold">
+              Create Your{" "}
+              <span className="text-purple-500">Magical</span>{" "}
+              <span className="text-pink-500">Coloring</span>{" "}
+              <span className="text-blue-500">Page</span>
             </h2>
             <p className="text-gray-600">
-              Describe what you'd like to color, choose your preferred size, and let our AI do the magic.
+              Describe what you'd like to color, choose your preferred size, and let our{" "}
+              <span className="text-orange-500 font-semibold">AI magic</span> do the work.
             </p>
           </div>
 
