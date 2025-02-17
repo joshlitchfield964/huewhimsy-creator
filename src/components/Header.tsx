@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
@@ -14,9 +13,8 @@ export const Header = () => {
         <div className="flex items-center justify-between h-16">
           <a href="/" className="flex items-center">
             <span className="text-2xl font-display font-bold">
-              Color
-              <span className="text-pink-500">Page</span>
-              <span className="text-purple-500">AI</span>
+              Printable
+              <span className="text-pink-500">Perks</span>
             </span>
           </a>
 
@@ -49,7 +47,6 @@ export const Header = () => {
         </div>
       </div>
 
-      {/* Mobile menu */}
       {isMenuOpen && (
         <div className="md:hidden bg-white border-b">
           <nav className="container mx-auto px-4 py-4 flex flex-col gap-4">

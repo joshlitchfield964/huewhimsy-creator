@@ -1,4 +1,3 @@
-
 import { FileText, Palette, Share } from "lucide-react";
 
 const steps = [
@@ -24,7 +23,7 @@ const steps = [
 
 export const HowItWorks = () => {
   return (
-    <div className="py-20 bg-secondary">
+    <div id="how-it-works" className="py-20 bg-secondary">
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto space-y-12 animate-fade-up">
           <div className="text-center space-y-4">
