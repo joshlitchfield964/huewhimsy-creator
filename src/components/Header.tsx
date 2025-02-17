@@ -1,4 +1,6 @@
+
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
 
@@ -11,23 +13,23 @@ export const Header = () => {
     <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
-          <a href="/" className="flex items-center">
+          <Link to="/" className="flex items-center">
             <span className="text-2xl font-display font-bold">
               Printable
               <span className="text-pink-500">Perks</span>
             </span>
-          </a>
+          </Link>
 
           <nav className="hidden md:flex items-center gap-8">
-            <a href="#" className="text-gray-600 hover:text-primary transition">
+            <Link to="/" className="text-gray-600 hover:text-primary transition">
               Home
-            </a>
-            <a href="#generator" className="text-gray-600 hover:text-primary transition">
+            </Link>
+            <a href="/#generator" className="text-gray-600 hover:text-primary transition">
               Create
             </a>
-            <a href="#gallery" className="text-gray-600 hover:text-primary transition">
+            <Link to="/gallery" className="text-gray-600 hover:text-primary transition">
               Gallery
-            </a>
+            </Link>
             <Button className="bg-primary hover:bg-primary/90">
               Get Started
             </Button>
@@ -50,27 +52,27 @@ export const Header = () => {
       {isMenuOpen && (
         <div className="md:hidden bg-white border-b">
           <nav className="container mx-auto px-4 py-4 flex flex-col gap-4">
-            <a
-              href="#"
+            <Link
+              to="/"
               className="text-gray-600 hover:text-primary transition py-2"
               onClick={toggleMenu}
             >
               Home
-            </a>
+            </Link>
             <a
-              href="#generator"
+              href="/#generator"
               className="text-gray-600 hover:text-primary transition py-2"
               onClick={toggleMenu}
             >
               Create
             </a>
-            <a
-              href="#gallery"
+            <Link
+              to="/gallery"
               className="text-gray-600 hover:text-primary transition py-2"
               onClick={toggleMenu}
             >
               Gallery
-            </a>
+            </Link>
             <Button className="bg-primary hover:bg-primary/90 w-full">
               Get Started
             </Button>
