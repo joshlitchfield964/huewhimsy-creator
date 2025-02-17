@@ -38,14 +38,9 @@ export const Hero = () => {
         <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
           <div className="text-left max-w-2xl space-y-8 animate-fade-down">
             <h1 className="font-sans text-5xl md:text-7xl font-bold leading-tight">
-              Transform{" "}
-              <span className="text-pink-500">Words</span>{" "}
-              into{" "}
-              <span className="block mt-4">
-                Beautiful{" "}
-                <span className="text-purple-500">Coloring</span>{" "}
-                <span className="text-blue-500">Pages</span>
-              </span>
+              Transform <span className="text-pink-500">Words</span> into Beautiful{" "}
+              <span className="text-purple-500">Coloring</span>{" "}
+              <span className="text-blue-500">Pages</span>
             </h1>
             <p className="text-lg md:text-xl text-gray-600">
               Create <span className="text-orange-500 font-semibold">unique</span> coloring pages from your{" "}
@@ -70,15 +65,6 @@ export const Hero = () => {
                 <MoveDown className="ml-2 h-4 w-4 group-hover:translate-y-1 transition-transform" />
               </Button>
             </div>
-            <Button
-              variant="ghost"
-              size="lg"
-              className="group text-lg gap-2"
-              onClick={getRandomPrompt}
-            >
-              <Sparkles className="w-5 h-5 text-yellow-500" />
-              Get Random Prompt
-            </Button>
           </div>
           <div className="w-full max-w-md lg:max-w-xl animate-fade-up">
             <img

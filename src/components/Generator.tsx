@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -9,13 +8,22 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { Download, Printer, Wand2 } from "lucide-react";
+import { Download, Printer, Wand2, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 
 const RESOLUTIONS = [
   { label: "Square (1024x1024)", value: "1024x1024" },
   { label: "Portrait (1024x1536)", value: "1024x1536" },
   { label: "Landscape (1536x1024)", value: "1536x1024" },
+];
+
+const randomPrompts = [
+  "A magical forest with unicorns playing among rainbow waterfalls",
+  "A cozy treehouse filled with fairy lights and reading nooks",
+  "An underwater city with mermaids and friendly sea creatures",
+  "A space adventure with astronaut cats exploring new planets",
+  "A whimsical garden party with dancing flowers and butterflies",
+  "A dragon's treasure cave filled with sparkling gems and gold",
 ];
 
 export const Generator = () => {
@@ -40,43 +48,12 @@ export const Generator = () => {
     toast.success("Your coloring page is ready!");
   };
 
-  const handleDownloadPNG = () => {
-    if (!generatedImage) return;
-    const link = document.createElement("a");
-    link.href = generatedImage;
-    link.download = "coloring-page.png";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    toast.success("Downloaded as PNG!");
-  };
-
-  const handleDownloadPDF = () => {
-    if (!generatedImage) return;
-    // TODO: Implement PDF conversion
-    toast.success("Downloaded as PDF!");
-  };
-
-  const handlePrint = () => {
-    if (!generatedImage) return;
-    const printWindow = window.open("", "_blank");
-    if (printWindow) {
-      printWindow.document.write(`
-        <html>
-          <head>
-            <title>Print Coloring Page</title>
-          </head>
-          <body style="margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh;">
-            <img src="${generatedImage}" style="max-width: 100%; max-height: 100vh;" />
-          </body>
-        </html>
-      `);
-      printWindow.document.close();
-      printWindow.focus();
-      printWindow.print();
-      printWindow.close();
-    }
-    toast.success("Preparing print preview!");
+  const getRandomPrompt = () => {
+    const prompt = randomPrompts[Math.floor(Math.random() * randomPrompts.length)];
+    setPrompt(prompt);
+    toast.success("Random prompt inserted!", {
+      description: prompt,
+    });
   };
 
   return (
@@ -99,9 +76,20 @@ export const Generator = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <div className="space-y-6 bg-secondary p-8 rounded-xl">
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">
-                  Describe your perfect coloring page
-                </label>
+                <div className="flex justify-between items-center">
+                  <label className="text-sm font-medium text-gray-700">
+                    Describe your perfect coloring page
+                  </label>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="group text-sm gap-2"
+                    onClick={getRandomPrompt}
+                  >
+                    <Sparkles className="w-4 h-4 text-yellow-500" />
+                    Get Random Prompt
+                  </Button>
+                </div>
                 <Textarea
                   placeholder="E.g., A magical forest with unicorns and fairies..."
                   value={prompt}
@@ -162,7 +150,16 @@ export const Generator = () => {
 
               <div className="flex gap-4">
                 <Button
-                  onClick={handleDownloadPNG}
+                  onClick={() => {
+                    if (!generatedImage) return;
+                    const link = document.createElement("a");
+                    link.href = generatedImage;
+                    link.download = "coloring-page.png";
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    toast.success("Downloaded as PNG!");
+                  }}
                   disabled={!generatedImage}
                   variant="outline"
                   className="flex-1"
@@ -171,7 +168,11 @@ export const Generator = () => {
                   PNG
                 </Button>
                 <Button
-                  onClick={handleDownloadPDF}
+                  onClick={() => {
+                    if (!generatedImage) return;
+                    // TODO: Implement PDF conversion
+                    toast.success("Downloaded as PDF!");
+                  }}
                   disabled={!generatedImage}
                   variant="outline"
                   className="flex-1"
@@ -180,7 +181,27 @@ export const Generator = () => {
                   PDF
                 </Button>
                 <Button
-                  onClick={handlePrint}
+                  onClick={() => {
+                    if (!generatedImage) return;
+                    const printWindow = window.open("", "_blank");
+                    if (printWindow) {
+                      printWindow.document.write(`
+                        <html>
+                          <head>
+                            <title>Print Coloring Page</title>
+                          </head>
+                          <body style="margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh;">
+                            <img src="${generatedImage}" style="max-width: 100%; max-height: 100vh;" />
+                          </body>
+                        </html>
+                      `);
+                      printWindow.document.close();
+                      printWindow.focus();
+                      printWindow.print();
+                      printWindow.close();
+                    }
+                    toast.success("Preparing print preview!");
+                  }}
                   disabled={!generatedImage}
                   variant="outline"
                   className="flex-1"
