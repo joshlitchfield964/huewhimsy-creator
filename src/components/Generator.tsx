@@ -61,7 +61,7 @@ export const Generator = () => {
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto space-y-8 animate-fade-up">
           <div className="text-center space-y-4">
-            <h2 className="font-display text-4xl font-bold">
+            <h2 className="font-sans text-4xl font-bold">
               Create Your{" "}
               <span className="text-purple-500">Magical</span>{" "}
               <span className="text-pink-500">Coloring</span>{" "}
@@ -76,26 +76,24 @@ export const Generator = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <div className="space-y-6 bg-secondary p-8 rounded-xl">
               <div className="space-y-2">
-                <div className="flex justify-between items-center">
-                  <label className="text-sm font-medium text-gray-700">
-                    Describe your perfect coloring page
-                  </label>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="group text-sm gap-2"
-                    onClick={getRandomPrompt}
-                  >
-                    <Sparkles className="w-4 h-4 text-yellow-500" />
-                    Get Random Prompt
-                  </Button>
-                </div>
+                <label className="text-sm font-medium text-gray-700">
+                  Describe your perfect coloring page
+                </label>
                 <Textarea
                   placeholder="E.g., A magical forest with unicorns and fairies..."
                   value={prompt}
                   onChange={(e) => setPrompt(e.target.value)}
                   className="min-h-[120px] bg-white"
                 />
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="group text-sm gap-2 w-full border"
+                  onClick={getRandomPrompt}
+                >
+                  <Sparkles className="w-4 h-4 text-yellow-500" />
+                  Get Random Prompt
+                </Button>
               </div>
 
               <div className="space-y-2">

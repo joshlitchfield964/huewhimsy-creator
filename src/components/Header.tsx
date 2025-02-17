@@ -25,7 +25,7 @@ export const Header = () => {
             <a href="#generator" className="text-gray-600 hover:text-primary transition">
               Create
             </a>
-            <a href="#" className="text-gray-600 hover:text-primary transition">
+            <a href="#gallery" className="text-gray-600 hover:text-primary transition">
               Gallery
             </a>
             <Button className="bg-primary hover:bg-primary/90">
@@ -65,7 +65,7 @@ export const Header = () => {
               Create
             </a>
             <a
-              href="#"
+              href="#gallery"
               className="text-gray-600 hover:text-primary transition py-2"
               onClick={toggleMenu}
             >
