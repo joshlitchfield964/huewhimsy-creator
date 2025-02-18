@@ -35,7 +35,7 @@ export const FAQ = () => {
       <div className="container mx-auto px-4">
         <div className="max-w-3xl mx-auto space-y-8 animate-fade-up">
           <div className="text-center space-y-4">
-            <h2 className="font-display text-4xl font-bold text-primary">
+            <h2 className="font-sans text-4xl font-bold text-primary">
               Frequently Asked Questions
             </h2>
             <p className="text-gray-600">

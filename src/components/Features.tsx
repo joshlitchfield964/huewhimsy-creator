@@ -28,7 +28,7 @@ export const Features = () => {
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto space-y-12 animate-fade-up">
           <div className="text-center space-y-4">
-            <h2 className="font-display text-4xl font-bold">
+            <h2 className="font-sans text-4xl font-bold">
               Powerful <span className="text-purple-500">Features</span>
             </h2>
             <p className="text-gray-600 max-w-2xl mx-auto">
