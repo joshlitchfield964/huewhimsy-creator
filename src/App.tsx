@@ -9,6 +9,7 @@ import { useAuth } from "./components/AuthProvider";
 import Index from "./pages/Index";
 import Gallery from "./pages/Gallery";
 import Auth from "./pages/Auth";
+import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -39,6 +40,14 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/gallery" element={<Gallery />} />
             <Route path="/auth" element={<Auth />} />
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              }
+            />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
