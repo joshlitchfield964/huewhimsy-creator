@@ -1,4 +1,3 @@
-
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -158,7 +157,7 @@ export class RunwareService {
         taskType: "imageInference",
         taskUUID,
         positivePrompt: enhancedPrompt,
-        model: params.model || "runware:100@1",
+        model: "runware:100@1",
         width: params.width || 1024,
         height: params.height || 1024,
         numberResults: params.numberResults || 1,
