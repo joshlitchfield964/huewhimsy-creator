@@ -7,31 +7,60 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-const RESOLUTIONS = [
-  { label: "Square (1024x1024)", value: "1024x1024" },
-  { label: "Portrait (1024x1536)", value: "1024x1536" },
-  { label: "Landscape (1536x1024)", value: "1536x1024" },
-];
-
-interface ResolutionSelectProps {
-  resolution: string;
-  setResolution: (resolution: string) => void;
+interface Resolution {
+  width: number;
+  height: number;
 }
 
-export const ResolutionSelect = ({ resolution, setResolution }: ResolutionSelectProps) => {
+interface ResolutionOption {
+  label: string;
+  value: Resolution;
+}
+
+interface ResolutionSelectProps {
+  resolution: Resolution;
+  setResolution: (resolution: Resolution) => void;
+  options: ResolutionOption[];
+}
+
+export const ResolutionSelect = ({
+  resolution,
+  setResolution,
+  options
+}: ResolutionSelectProps) => {
+  const getCurrentValue = () => {
+    const option = options.find(
+      opt => opt.value.width === resolution.width && opt.value.height === resolution.height
+    );
+    return option ? `${option.value.width}x${option.value.height}` : "";
+  };
+
   return (
     <div className="space-y-2">
       <label className="text-sm font-medium text-gray-700">
         Choose page size
       </label>
-      <Select value={resolution} onValueChange={setResolution}>
+      <Select
+        value={getCurrentValue()}
+        onValueChange={(value) => {
+          const option = options.find(
+            opt => `${opt.value.width}x${opt.value.height}` === value
+          );
+          if (option) {
+            setResolution(option.value);
+          }
+        }}
+      >
         <SelectTrigger className="bg-white">
           <SelectValue placeholder="Select size" />
         </SelectTrigger>
         <SelectContent>
-          {RESOLUTIONS.map((res) => (
-            <SelectItem key={res.value} value={res.value}>
-              {res.label}
+          {options.map((opt) => (
+            <SelectItem
+              key={`${opt.value.width}x${opt.value.height}`}
+              value={`${opt.value.width}x${opt.value.height}`}
+            >
+              {opt.label}
             </SelectItem>
           ))}
         </SelectContent>

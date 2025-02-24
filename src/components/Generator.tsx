@@ -6,10 +6,20 @@ import { toast } from "sonner";
 import { PromptInput } from "./generator/PromptInput";
 import { ResolutionSelect } from "./generator/ResolutionSelect";
 import { Preview } from "./generator/Preview";
+import { AgeGroupSelect } from "./generator/AgeGroupSelect";
+import { runwareService } from "@/services/runware";
+import type { AgeGroup } from "@/services/runware";
+
+const RESOLUTIONS = [
+  { label: "Square (1024x1024)", value: { width: 1024, height: 1024 } },
+  { label: "Portrait (1024x1536)", value: { width: 1024, height: 1536 } },
+  { label: "Landscape (1536x1024)", value: { width: 1536, height: 1024 } },
+];
 
 export const Generator = () => {
   const [prompt, setPrompt] = useState("");
-  const [resolution, setResolution] = useState("1024x1024");
+  const [resolution, setResolution] = useState(RESOLUTIONS[0].value);
+  const [ageGroup, setAgeGroup] = useState<AgeGroup>("school");
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedImage, setGeneratedImage] = useState<string>("");
 
@@ -20,13 +30,23 @@ export const Generator = () => {
     }
 
     setIsGenerating(true);
-    // TODO: Implement actual API call
     toast.info("Generation started...");
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    // Temporary placeholder image for demonstration
-    setGeneratedImage("/placeholder.svg");
-    setIsGenerating(false);
-    toast.success("Your coloring page is ready!");
+
+    try {
+      const result = await runwareService.generateImage({
+        positivePrompt: prompt,
+        ageGroup,
+        width: resolution.width,
+        height: resolution.height,
+      });
+
+      setGeneratedImage(result.imageURL);
+      toast.success("Your coloring page is ready!");
+    } catch (error: any) {
+      toast.error(error.message || "Failed to generate image");
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   return (
@@ -49,7 +69,12 @@ export const Generator = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <div className="space-y-6 bg-secondary p-8 rounded-xl">
               <PromptInput prompt={prompt} setPrompt={setPrompt} />
-              <ResolutionSelect resolution={resolution} setResolution={setResolution} />
+              <AgeGroupSelect ageGroup={ageGroup} setAgeGroup={setAgeGroup} />
+              <ResolutionSelect
+                resolution={resolution}
+                setResolution={setResolution}
+                options={RESOLUTIONS}
+              />
               <Button
                 onClick={handleGenerate}
                 disabled={isGenerating}
