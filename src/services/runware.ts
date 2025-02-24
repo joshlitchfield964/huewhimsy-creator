@@ -1,5 +1,6 @@
 
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 const API_ENDPOINT = "wss://ws-api.runware.ai/v1";
 

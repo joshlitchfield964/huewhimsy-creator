@@ -9,6 +9,27 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      generation_settings: {
+        Row: {
+          age_group: Database["public"]["Enums"]["age_group"] | null
+          created_at: string
+          id: string
+          user_id: string | null
+        }
+        Insert: {
+          age_group?: Database["public"]["Enums"]["age_group"] | null
+          created_at?: string
+          id?: string
+          user_id?: string | null
+        }
+        Update: {
+          age_group?: Database["public"]["Enums"]["age_group"] | null
+          created_at?: string
+          id?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -44,7 +65,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      age_group: "toddler" | "preschool" | "school" | "teen" | "adult"
     }
     CompositeTypes: {
       [_ in never]: never
