@@ -2,12 +2,52 @@
 import { Button } from "@/components/ui/button";
 import { Download, Printer } from "lucide-react";
 import { toast } from "sonner";
+import { jsPDF } from "jspdf";
 
 interface PreviewProps {
   generatedImage: string;
 }
 
 export const Preview = ({ generatedImage }: PreviewProps) => {
+  const handlePdfDownload = async () => {
+    if (!generatedImage) return;
+
+    try {
+      // Create a temporary image element to get dimensions
+      const img = new Image();
+      img.src = generatedImage;
+      await new Promise((resolve) => (img.onload = resolve));
+
+      // Calculate PDF dimensions to match image aspect ratio
+      const imgAspectRatio = img.width / img.height;
+      const pdfWidth = 210; // A4 width in mm
+      const pdfHeight = pdfWidth / imgAspectRatio;
+
+      // Create PDF with calculated dimensions
+      const pdf = new jsPDF({
+        orientation: pdfHeight > pdfWidth ? "portrait" : "landscape",
+        unit: "mm",
+      });
+
+      // Add image to PDF, centered and scaled to fit the page
+      pdf.addImage(
+        generatedImage,
+        "PNG",
+        0,
+        0,
+        pdfWidth,
+        pdfHeight
+      );
+
+      // Download the PDF
+      pdf.save("coloring-page.pdf");
+      toast.success("Downloaded as PDF!");
+    } catch (error) {
+      console.error("PDF generation error:", error);
+      toast.error("Failed to generate PDF");
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="aspect-square relative bg-white rounded-lg overflow-hidden border-2 border-dashed border-gray-200">
@@ -44,10 +84,7 @@ export const Preview = ({ generatedImage }: PreviewProps) => {
           PNG
         </Button>
         <Button
-          onClick={() => {
-            if (!generatedImage) return;
-            toast.success("Downloaded as PDF!");
-          }}
+          onClick={handlePdfDownload}
           disabled={!generatedImage}
           variant="outline"
           className="flex-1"
