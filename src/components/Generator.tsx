@@ -7,6 +7,7 @@ import { PromptInput } from "./generator/PromptInput";
 import { ResolutionSelect } from "./generator/ResolutionSelect";
 import { Preview } from "./generator/Preview";
 import { AgeGroupSelect } from "./generator/AgeGroupSelect";
+import { ModelSelect, MODELS } from "./generator/ModelSelect";
 import { runwareService } from "@/services/runware";
 import type { AgeGroup } from "@/services/runware";
 
@@ -20,6 +21,7 @@ export const Generator = () => {
   const [prompt, setPrompt] = useState("");
   const [resolution, setResolution] = useState(RESOLUTIONS[0].value);
   const [ageGroup, setAgeGroup] = useState<AgeGroup>("school");
+  const [model, setModel] = useState(MODELS[0].value);
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedImage, setGeneratedImage] = useState<string>("");
 
@@ -38,6 +40,7 @@ export const Generator = () => {
         ageGroup,
         width: resolution.width,
         height: resolution.height,
+        model: model,
       });
 
       setGeneratedImage(result.imageURL);
@@ -69,6 +72,7 @@ export const Generator = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <div className="space-y-6 bg-secondary p-8 rounded-xl">
               <PromptInput prompt={prompt} setPrompt={setPrompt} />
+              <ModelSelect model={model} setModel={setModel} />
               <AgeGroupSelect ageGroup={ageGroup} setAgeGroup={setAgeGroup} />
               <ResolutionSelect
                 resolution={resolution}

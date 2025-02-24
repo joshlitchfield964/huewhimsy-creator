@@ -129,7 +129,7 @@ export class RunwareService {
     });
   }
 
-  private enhancePrompt(prompt: string, ageGroup?: AgeGroup): string {
+  private enhancePrompt(prompt: string, ageGroup?: AgeGroup, model?: string): string {
     const ageGroupPrompts = {
       toddler: "very simple, bold outlines, large shapes, minimal details",
       preschool: "simple, clear outlines, basic shapes, few details",
@@ -138,7 +138,13 @@ export class RunwareService {
       adult: "intricate patterns, sophisticated designs, detailed artwork"
     };
 
-    return `Black and white lineart suitable for coloring pages, ${prompt}, ${ageGroup ? ageGroupPrompts[ageGroup] : ""}, high contrast, clean lines, no shading or grayscale`.trim();
+    const basePrompt = `Black and white lineart suitable for coloring pages, ${prompt}, ${ageGroup ? ageGroupPrompts[ageGroup] : ""}, high contrast, clean lines, no shading or grayscale`;
+
+    if (model === "runware:flux-dev@1") {
+      return `${basePrompt}, line art style, coloring book style`;
+    }
+
+    return basePrompt.trim();
   }
 
   async generateImage(params: GenerateImageParams): Promise<GeneratedImage> {
@@ -150,14 +156,14 @@ export class RunwareService {
     }
 
     const taskUUID = crypto.randomUUID();
-    const enhancedPrompt = this.enhancePrompt(params.positivePrompt, params.ageGroup);
+    const enhancedPrompt = this.enhancePrompt(params.positivePrompt, params.ageGroup, params.model);
     
     return new Promise((resolve, reject) => {
       const message = [{
         taskType: "imageInference",
         taskUUID,
         positivePrompt: enhancedPrompt,
-        model: "runware:100@1",
+        model: params.model || "runware:100@1",
         width: params.width || 1024,
         height: params.height || 1024,
         numberResults: params.numberResults || 1,
