@@ -21,7 +21,7 @@ export const Generator = () => {
   const [prompt, setPrompt] = useState("");
   const [resolution, setResolution] = useState(RESOLUTIONS[0].value);
   const [ageGroup, setAgeGroup] = useState<AgeGroup>("school");
-  const [model, setModel] = useState(MODELS[0].value);
+  const [model, setModel] = useState<typeof MODELS[number]["value"]>(MODELS[0].value);
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedImage, setGeneratedImage] = useState<string>("");
 

@@ -12,9 +12,11 @@ export const MODELS = [
   { label: "FLUX.1 [dev]", value: "runware:flux-dev@1" }
 ] as const;
 
+type ModelValue = typeof MODELS[number]["value"];
+
 interface ModelSelectProps {
-  model: string;
-  setModel: (model: string) => void;
+  model: ModelValue;
+  setModel: (value: ModelValue) => void;
 }
 
 export const ModelSelect = ({ model, setModel }: ModelSelectProps) => {
@@ -25,7 +27,7 @@ export const ModelSelect = ({ model, setModel }: ModelSelectProps) => {
       </label>
       <Select
         value={model}
-        onValueChange={setModel}
+        onValueChange={(value: ModelValue) => setModel(value)}
       >
         <SelectTrigger className="bg-white">
           <SelectValue placeholder="Select model" />
