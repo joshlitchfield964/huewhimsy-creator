@@ -46,6 +46,9 @@ export const Header = () => {
             <Link to="/gallery" className="text-gray-600 hover:text-primary transition">
               Gallery
             </Link>
+            <Link to="/pricing" className="text-gray-600 hover:text-primary transition">
+              Pricing
+            </Link>
             {session ? (
               <>
                 <Link to="/dashboard" className="text-gray-600 hover:text-primary transition">
@@ -107,6 +110,13 @@ export const Header = () => {
               onClick={toggleMenu}
             >
               Gallery
+            </Link>
+            <Link
+              to="/pricing"
+              className="text-gray-600 hover:text-primary transition py-2"
+              onClick={toggleMenu}
+            >
+              Pricing
             </Link>
             {session ? (
               <>
