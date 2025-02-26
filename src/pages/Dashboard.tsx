@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { CalendarIcon, CreditCard, ImageIcon, Loader2, User, Globe, Mail, Save, Sparkles } from "lucide-react";
+import { CalendarIcon, CreditCard, ImageIcon, Loader2, User, Globe, Mail, Save, Sparkles, CheckCircle, UserCircle } from "lucide-react";
 import { format } from "date-fns";
 
 interface Profile {
@@ -40,6 +40,7 @@ export default function Dashboard() {
   const [website, setWebsite] = useState("");
   const [loadingSubscription, setLoadingSubscription] = useState(false);
   const [updatingProfile, setUpdatingProfile] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
 
   useEffect(() => {
     if (session?.user.id) {
@@ -112,6 +113,8 @@ export default function Dashboard() {
 
       if (error) throw error;
       toast.success("Profile updated successfully!");
+      setSaveSuccess(true);
+      setTimeout(() => setSaveSuccess(false), 3000);
     } catch (error: any) {
       toast.error(error.message);
     } finally {
@@ -316,93 +319,150 @@ export default function Dashboard() {
               </div>
             </div>
 
-            {/* Profile Settings Card */}
-            <div>
+            {/* Profile Settings Section - Redesigned */}
+            <div className="mb-10">
               <h2 className="text-2xl font-bold mb-6 flex items-center">
-                <User className="mr-2 h-5 w-5 text-pink-500" />
+                <UserCircle className="mr-2 h-5 w-5 text-pink-500" />
                 Profile Settings
               </h2>
               
-              <Card className="border-none shadow-lg bg-white hover:shadow-xl transition-shadow duration-300 max-w-2xl mx-auto">
-                <CardHeader className="bg-gradient-to-r from-pink-50 to-purple-50 rounded-t-lg border-b">
-                  <CardTitle className="flex items-center">
-                    <User className="mr-2 h-5 w-5 text-pink-500" />
-                    Your Profile
-                  </CardTitle>
-                  <CardDescription>Update your personal information</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6 pt-6">
-                  <div className="space-y-1">
-                    <label className="flex items-center text-sm font-medium text-gray-700">
-                      <Mail className="mr-2 h-4 w-4 text-gray-500" />
-                      Email
-                    </label>
-                    <Input
-                      type="text"
-                      value={session?.user.email}
-                      disabled
-                      className="bg-gray-50 border-gray-200"
-                    />
+              <div className="bg-gradient-to-r from-pink-50 via-purple-50 to-indigo-50 p-6 rounded-xl shadow-lg">
+                <div className="grid md:grid-cols-3 gap-8">
+                  {/* Profile Avatar Section */}
+                  <div className="md:col-span-1 flex flex-col items-center justify-start">
+                    <div className="relative">
+                      <div className="w-36 h-36 rounded-full bg-gradient-to-r from-pink-300 to-purple-400 flex items-center justify-center shadow-lg">
+                        <UserCircle className="w-20 h-20 text-white" />
+                      </div>
+                      <div className="absolute bottom-0 right-0 bg-white p-2 rounded-full shadow-md">
+                        <User className="w-5 h-5 text-purple-500" />
+                      </div>
+                    </div>
+                    
+                    <div className="mt-4 text-center">
+                      <h3 className="font-bold text-lg">{fullName || username || "Your Name"}</h3>
+                      <p className="text-gray-600 text-sm">{session?.user.email}</p>
+                    </div>
+                    
+                    <div className="mt-6 w-full bg-white rounded-lg p-4 shadow-md">
+                      <h4 className="font-medium text-gray-800 flex items-center mb-3">
+                        <CalendarIcon className="w-4 h-4 mr-2 text-pink-500" />
+                        Account Info
+                      </h4>
+                      <div className="text-sm space-y-2">
+                        <p className="flex justify-between">
+                          <span className="text-gray-600">Member since:</span>
+                          <span className="font-medium">{profile?.updated_at ? format(new Date(profile.updated_at), "MMM d, yyyy") : "N/A"}</span>
+                        </p>
+                        <p className="flex justify-between">
+                          <span className="text-gray-600">Status:</span>
+                          <span className="font-medium text-green-600 flex items-center">
+                            Active <CheckCircle className="ml-1 w-3 h-3" />
+                          </span>
+                        </p>
+                      </div>
+                    </div>
                   </div>
-
-                  <div className="space-y-1">
-                    <label className="flex items-center text-sm font-medium text-gray-700">
-                      <User className="mr-2 h-4 w-4 text-gray-500" />
-                      Username
-                    </label>
-                    <Input
-                      type="text"
-                      value={username}
-                      onChange={(e) => setUsername(e.target.value)}
-                      className="border-gray-200 focus:border-purple-300 focus:ring focus:ring-purple-200 focus:ring-opacity-50"
-                    />
+                  
+                  {/* Form Section */}
+                  <div className="md:col-span-2">
+                    <div className="bg-white rounded-xl shadow-md p-6">
+                      <h3 className="text-xl font-semibold mb-5 text-gray-800 flex items-center">
+                        <User className="mr-2 h-5 w-5 text-purple-500" />
+                        Personal Information
+                      </h3>
+                      
+                      <div className="space-y-5">
+                        <div className="grid md:grid-cols-2 gap-5">
+                          <div className="group space-y-2">
+                            <label className="flex items-center text-sm font-medium text-gray-700 group-hover:text-pink-500 transition-colors">
+                              <Mail className="mr-2 h-4 w-4 text-gray-500" />
+                              Email
+                            </label>
+                            <Input
+                              type="text"
+                              value={session?.user.email}
+                              disabled
+                              className="bg-gray-50 border-gray-200"
+                            />
+                            <p className="text-xs text-gray-500">Your email is used for login and cannot be changed</p>
+                          </div>
+                          
+                          <div className="group space-y-2">
+                            <label className="flex items-center text-sm font-medium text-gray-700 group-hover:text-pink-500 transition-colors">
+                              <User className="mr-2 h-4 w-4 text-gray-500" />
+                              Username
+                            </label>
+                            <Input
+                              type="text"
+                              value={username}
+                              onChange={(e) => setUsername(e.target.value)}
+                              className="border-gray-200 focus:border-purple-300 focus:ring focus:ring-purple-200 focus:ring-opacity-50 transition-all"
+                              placeholder="Choose a username"
+                            />
+                            <p className="text-xs text-gray-500">Your unique username on the platform</p>
+                          </div>
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <label className="flex items-center text-sm font-medium text-gray-700 hover:text-pink-500 transition-colors">
+                            <User className="mr-2 h-4 w-4 text-gray-500" />
+                            Full Name
+                          </label>
+                          <Input
+                            type="text"
+                            value={fullName}
+                            onChange={(e) => setFullName(e.target.value)}
+                            className="border-gray-200 focus:border-purple-300 focus:ring focus:ring-purple-200 focus:ring-opacity-50 transition-all"
+                            placeholder="Your full name"
+                          />
+                          <p className="text-xs text-gray-500">How you'd like to be addressed</p>
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <label className="flex items-center text-sm font-medium text-gray-700 hover:text-pink-500 transition-colors">
+                            <Globe className="mr-2 h-4 w-4 text-gray-500" />
+                            Website
+                          </label>
+                          <Input
+                            type="url"
+                            value={website}
+                            onChange={(e) => setWebsite(e.target.value)}
+                            className="border-gray-200 focus:border-purple-300 focus:ring focus:ring-purple-200 focus:ring-opacity-50 transition-all"
+                            placeholder="https://your-website.com"
+                          />
+                          <p className="text-xs text-gray-500">Share your personal website or portfolio</p>
+                        </div>
+                        
+                        <div className="pt-3">
+                          <Button
+                            onClick={updateProfile}
+                            disabled={updatingProfile}
+                            className="w-full bg-gradient-to-r from-pink-500 to-purple-600 hover:opacity-90 shadow-md flex items-center justify-center py-6"
+                          >
+                            {updatingProfile ? (
+                              <>
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                Updating Profile...
+                              </>
+                            ) : saveSuccess ? (
+                              <>
+                                <CheckCircle className="mr-2 h-4 w-4" />
+                                Profile Updated Successfully!
+                              </>
+                            ) : (
+                              <>
+                                <Save className="mr-2 h-4 w-4" />
+                                Save Profile Information
+                              </>
+                            )}
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-
-                  <div className="space-y-1">
-                    <label className="flex items-center text-sm font-medium text-gray-700">
-                      <User className="mr-2 h-4 w-4 text-gray-500" />
-                      Full Name
-                    </label>
-                    <Input
-                      type="text"
-                      value={fullName}
-                      onChange={(e) => setFullName(e.target.value)}
-                      className="border-gray-200 focus:border-purple-300 focus:ring focus:ring-purple-200 focus:ring-opacity-50"
-                    />
-                  </div>
-
-                  <div className="space-y-1">
-                    <label className="flex items-center text-sm font-medium text-gray-700">
-                      <Globe className="mr-2 h-4 w-4 text-gray-500" />
-                      Website
-                    </label>
-                    <Input
-                      type="url"
-                      value={website}
-                      onChange={(e) => setWebsite(e.target.value)}
-                      className="border-gray-200 focus:border-purple-300 focus:ring focus:ring-purple-200 focus:ring-opacity-50"
-                    />
-                  </div>
-
-                  <Button
-                    onClick={updateProfile}
-                    disabled={updatingProfile}
-                    className="w-full bg-gradient-to-r from-pink-500 to-purple-600 hover:opacity-90 shadow-md flex items-center justify-center"
-                  >
-                    {updatingProfile ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Updating...
-                      </>
-                    ) : (
-                      <>
-                        <Save className="mr-2 h-4 w-4" />
-                        Update Profile
-                      </>
-                    )}
-                  </Button>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             </div>
           </div>
         </div>
