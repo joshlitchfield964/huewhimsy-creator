@@ -10,7 +10,7 @@ const PRICING_PLANS = [
     price: 3,
     description: "Perfect for occasional coloring enthusiasts",
     features: [
-      "50 coloring pages per month",
+      "100 coloring pages per month",
       "High-quality PNG downloads",
       "PDF format support",
       "Print-ready files",
@@ -22,7 +22,7 @@ const PRICING_PLANS = [
     price: 5,
     description: "Ideal for regular creative sessions",
     features: [
-      "100 coloring pages per month",
+      "200 coloring pages per month",
       "All Starter features",
       "Priority generation",
       "Advanced age group targeting",
@@ -34,7 +34,7 @@ const PRICING_PLANS = [
     price: 8,
     description: "Best for educators and content creators",
     features: [
-      "200 coloring pages per month",
+      "400 coloring pages per month",
       "All Creator features",
       "Fastest generation speed",
       "Bulk download options",
@@ -52,6 +52,9 @@ export default function Pricing() {
           <h1 className="text-4xl font-bold mb-4">Simple, Transparent Pricing</h1>
           <p className="text-lg text-gray-600">
             Choose the perfect plan for your creative needs. All plans include access to our AI-powered coloring page generator.
+          </p>
+          <p className="mt-2 text-md text-primary font-medium">
+            Free users get 1 free coloring page generation per day!
           </p>
         </div>
 
