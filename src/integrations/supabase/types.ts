@@ -30,6 +30,33 @@ export type Database = {
         }
         Relationships: []
       }
+      generation_stats: {
+        Row: {
+          created_at: string
+          daily_count: number
+          id: string
+          monthly_count: number
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          daily_count?: number
+          id?: string
+          monthly_count?: number
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          daily_count?: number
+          id?: string
+          monthly_count?: number
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -54,6 +81,45 @@ export type Database = {
           updated_at?: string
           username?: string | null
           website?: string | null
+        }
+        Relationships: []
+      }
+      subscriptions: {
+        Row: {
+          created_at: string
+          current_period_end: string
+          current_period_start: string
+          id: string
+          monthly_generation_limit: number
+          plan_name: string
+          plan_price: number
+          status: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          current_period_end: string
+          current_period_start: string
+          id?: string
+          monthly_generation_limit: number
+          plan_name: string
+          plan_price: number
+          status?: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          current_period_end?: string
+          current_period_start?: string
+          id?: string
+          monthly_generation_limit?: number
+          plan_name?: string
+          plan_price?: number
+          status?: string
+          updated_at?: string | null
+          user_id?: string
         }
         Relationships: []
       }
