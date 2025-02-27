@@ -50,7 +50,7 @@ export default function Contact() {
               Get in Touch
             </h1>
             <p className="text-lg md:text-xl text-gray-700 max-w-3xl mx-auto">
-              Have questions about ColorPage AI? We're here to help. Reach out to our team and we'll get back to you as soon as possible.
+              Have questions about PrintablePerks? We're here to help. Reach out to our team and we'll get back to you as soon as possible.
             </p>
           </div>
         </div>
@@ -72,8 +72,8 @@ export default function Contact() {
                     </div>
                     <div>
                       <h3 className="font-medium text-gray-700">Email</h3>
-                      <a href="mailto:info@colorpageai.com" className="text-purple-600 hover:underline">
-                        info@colorpageai.com
+                      <a href="mailto:info@printableperks.com" className="text-purple-600 hover:underline">
+                        info@printableperks.com
                       </a>
                     </div>
                   </div>

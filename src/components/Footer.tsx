@@ -8,7 +8,7 @@ export const Footer = () => {
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="space-y-4">
-            <h3 className="font-display text-xl font-bold">ColorPage AI</h3>
+            <h3 className="font-display text-xl font-bold">PrintablePerks</h3>
             <p className="text-gray-300">
               Transform your ideas into beautiful coloring pages with the power of AI.
             </p>
@@ -61,23 +61,23 @@ export const Footer = () => {
             <div className="flex flex-col space-y-3">
               <div className="flex space-x-4">
                 <a
-                  href="https://twitter.com/colorpageai"
+                  href="https://twitter.com/printableperks"
                   className="text-gray-300 hover:text-white transition"
                   aria-label="Twitter"
                 >
                   <Twitter className="h-6 w-6" />
                 </a>
                 <a
-                  href="https://github.com/colorpageai"
+                  href="https://github.com/printableperks"
                   className="text-gray-300 hover:text-white transition"
                   aria-label="GitHub"
                 >
                   <Github className="h-6 w-6" />
                 </a>
               </div>
-              <a href="mailto:info@colorpageai.com" className="text-gray-300 hover:text-white transition flex items-center">
+              <a href="mailto:info@printableperks.com" className="text-gray-300 hover:text-white transition flex items-center">
                 <Mail className="h-4 w-4 mr-2" />
-                info@colorpageai.com
+                info@printableperks.com
               </a>
               <a href="tel:+15551234567" className="text-gray-300 hover:text-white transition flex items-center">
                 <Phone className="h-4 w-4 mr-2" />
@@ -88,7 +88,7 @@ export const Footer = () => {
         </div>
 
         <div className="mt-12 pt-8 border-t border-gray-700 text-center text-gray-300">
-          <p>&copy; {new Date().getFullYear()} ColorPage AI. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} PrintablePerks. All rights reserved.</p>
         </div>
       </div>
     </footer>

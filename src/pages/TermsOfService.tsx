@@ -22,7 +22,7 @@ export default function TermsOfService() {
             <div className="prose prose-lg max-w-none">
               <div className="border-l-4 border-amber-400 bg-amber-50 p-5 rounded-r mb-8">
                 <p className="text-amber-800 font-medium">
-                  Please read these Terms of Service carefully before using ColorPage AI. By accessing or using our service, you agree to be bound by these terms.
+                  Please read these Terms of Service carefully before using PrintablePerks. By accessing or using our service, you agree to be bound by these terms.
                 </p>
               </div>
               
@@ -31,7 +31,7 @@ export default function TermsOfService() {
                 Agreement to Terms
               </h2>
               <p>
-                By accessing or using ColorPage AI ("Service"), you agree to be bound by these Terms of Service ("Terms"). 
+                By accessing or using PrintablePerks ("Service"), you agree to be bound by these Terms of Service ("Terms"). 
                 If you do not agree to these Terms, you may not access or use the Service.
               </p>
               
@@ -43,7 +43,7 @@ export default function TermsOfService() {
                 <div className="flex items-start">
                   <BookOpen className="h-6 w-6 text-purple-600 mt-1 mr-3 flex-shrink-0" />
                   <p>
-                    ColorPage AI provides an AI-powered platform that transforms text descriptions into coloring pages. 
+                    PrintablePerks provides an AI-powered platform that transforms text descriptions into coloring pages. 
                     Features, functionality, and availability of the Service may change without notice.
                   </p>
                 </div>
@@ -185,7 +185,7 @@ export default function TermsOfService() {
                 <div className="mt-3">
                   <a href="/contact" className="text-purple-600 font-medium hover:underline">Visit our Contact Page</a>
                   <span className="mx-2 text-gray-400">|</span>
-                  <a href="mailto:legal@colorpageai.com" className="text-purple-600 font-medium hover:underline">legal@colorpageai.com</a>
+                  <a href="mailto:legal@printableperks.com" className="text-purple-600 font-medium hover:underline">legal@printableperks.com</a>
                 </div>
               </div>
             </div>

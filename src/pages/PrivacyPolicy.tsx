@@ -22,7 +22,7 @@ export default function PrivacyPolicy() {
             <div className="prose prose-lg max-w-none">
               <div className="border-l-4 border-blue-400 bg-blue-50 p-5 rounded-r mb-8">
                 <p className="text-blue-800 font-medium">
-                  This Privacy Policy describes how ColorPage AI collects, uses, and discloses your information when you use our service.
+                  This Privacy Policy describes how PrintablePerks collects, uses, and discloses your information when you use our service.
                 </p>
               </div>
               
@@ -31,7 +31,7 @@ export default function PrivacyPolicy() {
                 Introduction
               </h2>
               <p>
-                Welcome to ColorPage AI ("we," "our," or "us"). We respect your privacy and are committed to protecting your personal data. 
+                Welcome to PrintablePerks ("we," "our," or "us"). We respect your privacy and are committed to protecting your personal data. 
                 This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our service.
               </p>
               
@@ -149,7 +149,7 @@ export default function PrivacyPolicy() {
                 <div className="mt-3">
                   <a href="/contact" className="text-purple-600 font-medium hover:underline">Visit our Contact Page</a>
                   <span className="mx-2 text-gray-400">|</span>
-                  <a href="mailto:privacy@colorpageai.com" className="text-purple-600 font-medium hover:underline">privacy@colorpageai.com</a>
+                  <a href="mailto:privacy@printableperks.com" className="text-purple-600 font-medium hover:underline">privacy@printableperks.com</a>
                 </div>
               </div>
             </div>
