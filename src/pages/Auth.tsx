@@ -1,9 +1,10 @@
 
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Palette, Sparkles, Rocket } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Palette, Sparkles, Rocket, AlertCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Header } from "@/components/Header";
@@ -15,11 +16,14 @@ export default function Auth() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
+  const [acceptTerms, setAcceptTerms] = useState(false);
+  const [termsError, setTermsError] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setTermsError(false);
 
     try {
       if (isLogin) {
@@ -30,6 +34,12 @@ export default function Auth() {
         if (error) throw error;
         navigate("/dashboard");
       } else {
+        // Check if terms are accepted for signup
+        if (!acceptTerms) {
+          setTermsError(true);
+          throw new Error("You must accept the Terms of Service and Privacy Policy to create an account");
+        }
+
         const { error } = await supabase.auth.signUp({
           email,
           password,
@@ -120,6 +130,41 @@ export default function Auth() {
                     className="mt-1 transition-all duration-300 hover:border-purple-300 focus:ring-2 focus:ring-purple-200"
                   />
                 </div>
+
+                {!isLogin && (
+                  <div className="pt-2">
+                    <div className="flex items-start">
+                      <Checkbox 
+                        id="terms" 
+                        checked={acceptTerms}
+                        onCheckedChange={(checked) => {
+                          setAcceptTerms(checked === true);
+                          if (checked) setTermsError(false);
+                        }}
+                        className="mt-1 data-[state=checked]:bg-purple-500 data-[state=checked]:border-purple-500"
+                      />
+                      <label 
+                        htmlFor="terms" 
+                        className={`ml-2 text-sm ${termsError ? 'text-red-500' : 'text-gray-600'}`}
+                      >
+                        I agree to PrintablePerks' {' '}
+                        <Link to="/terms-of-service" className="text-purple-600 hover:text-purple-800 hover:underline" target="_blank">
+                          Terms of Service
+                        </Link>{' '}
+                        and{' '}
+                        <Link to="/privacy-policy" className="text-purple-600 hover:text-purple-800 hover:underline" target="_blank">
+                          Privacy Policy
+                        </Link>
+                      </label>
+                    </div>
+                    {termsError && (
+                      <div className="flex items-center mt-2 text-red-500 text-sm">
+                        <AlertCircle className="h-4 w-4 mr-1" />
+                        <span>You must accept the terms to continue</span>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
 
               <Button
@@ -140,7 +185,10 @@ export default function Auth() {
               <div className="text-center">
                 <button
                   type="button"
-                  onClick={() => setIsLogin(!isLogin)}
+                  onClick={() => {
+                    setIsLogin(!isLogin);
+                    setTermsError(false);
+                  }}
                   className="text-sm text-purple-600 hover:text-pink-500 transition-colors hover:underline inline-flex items-center gap-1"
                 >
                   <Sparkles className="w-4 h-4" />
