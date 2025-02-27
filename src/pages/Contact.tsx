@@ -225,21 +225,6 @@ export default function Contact() {
             </div>
           </div>
         </div>
-
-        {/* Map Section */}
-        <div className="bg-gray-50 py-16">
-          <div className="container mx-auto px-4">
-            <h2 className="text-3xl font-bold mb-8 text-center font-display">Find Us</h2>
-            <div className="max-w-5xl mx-auto rounded-xl overflow-hidden shadow-xl h-[400px] bg-gray-200 flex items-center justify-center">
-              {/* This would normally be a real map. For now, displaying a placeholder */}
-              <div className="text-center p-8">
-                <MapPin className="h-12 w-12 text-purple-500 mx-auto mb-4" />
-                <p className="text-lg text-gray-600">Interactive map would be displayed here</p>
-                <p className="text-gray-500">123 Innovation Drive, San Francisco, CA 94103</p>
-              </div>
-            </div>
-          </div>
-        </div>
       </main>
       
       <Footer />
