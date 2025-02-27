@@ -1,5 +1,5 @@
 
-import { Github, Twitter } from "lucide-react";
+import { Github, Twitter, Mail, Phone } from "lucide-react";
 import { Link } from "react-router-dom";
 
 export const Footer = () => {
@@ -49,29 +49,39 @@ export const Footer = () => {
                 </Link>
               </li>
               <li>
-                <a href="mailto:support@colorpageai.com" className="text-gray-300 hover:text-white transition">
+                <Link to="/contact" className="text-gray-300 hover:text-white transition">
                   Contact Us
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
 
           <div>
             <h4 className="font-bold mb-4">Connect</h4>
-            <div className="flex space-x-4">
-              <a
-                href="#"
-                className="text-gray-300 hover:text-white transition"
-                aria-label="Twitter"
-              >
-                <Twitter className="h-6 w-6" />
+            <div className="flex flex-col space-y-3">
+              <div className="flex space-x-4">
+                <a
+                  href="https://twitter.com/colorpageai"
+                  className="text-gray-300 hover:text-white transition"
+                  aria-label="Twitter"
+                >
+                  <Twitter className="h-6 w-6" />
+                </a>
+                <a
+                  href="https://github.com/colorpageai"
+                  className="text-gray-300 hover:text-white transition"
+                  aria-label="GitHub"
+                >
+                  <Github className="h-6 w-6" />
+                </a>
+              </div>
+              <a href="mailto:info@colorpageai.com" className="text-gray-300 hover:text-white transition flex items-center">
+                <Mail className="h-4 w-4 mr-2" />
+                info@colorpageai.com
               </a>
-              <a
-                href="#"
-                className="text-gray-300 hover:text-white transition"
-                aria-label="GitHub"
-              >
-                <Github className="h-6 w-6" />
+              <a href="tel:+15551234567" className="text-gray-300 hover:text-white transition flex items-center">
+                <Phone className="h-4 w-4 mr-2" />
+                +1 (555) 123-4567
               </a>
             </div>
           </div>
