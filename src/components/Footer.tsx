@@ -1,5 +1,6 @@
 
 import { Github, Twitter } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export const Footer = () => {
   return (
@@ -17,39 +18,39 @@ export const Footer = () => {
             <h4 className="font-bold mb-4">Quick Links</h4>
             <ul className="space-y-2">
               <li>
-                <a href="#" className="text-gray-300 hover:text-white transition">
+                <Link to="/" className="text-gray-300 hover:text-white transition">
                   Home
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="text-gray-300 hover:text-white transition">
-                  Create
-                </a>
-              </li>
-              <li>
-                <a href="#" className="text-gray-300 hover:text-white transition">
+                <Link to="/gallery" className="text-gray-300 hover:text-white transition">
                   Gallery
-                </a>
+                </Link>
+              </li>
+              <li>
+                <Link to="/pricing" className="text-gray-300 hover:text-white transition">
+                  Pricing
+                </Link>
               </li>
             </ul>
           </div>
 
           <div>
-            <h4 className="font-bold mb-4">Resources</h4>
+            <h4 className="font-bold mb-4">Legal</h4>
             <ul className="space-y-2">
               <li>
-                <a href="#" className="text-gray-300 hover:text-white transition">
-                  Help Center
-                </a>
-              </li>
-              <li>
-                <a href="#" className="text-gray-300 hover:text-white transition">
-                  Terms of Service
-                </a>
-              </li>
-              <li>
-                <a href="#" className="text-gray-300 hover:text-white transition">
+                <Link to="/privacy-policy" className="text-gray-300 hover:text-white transition">
                   Privacy Policy
+                </Link>
+              </li>
+              <li>
+                <Link to="/terms-of-service" className="text-gray-300 hover:text-white transition">
+                  Terms of Service
+                </Link>
+              </li>
+              <li>
+                <a href="mailto:support@colorpageai.com" className="text-gray-300 hover:text-white transition">
+                  Contact Us
                 </a>
               </li>
             </ul>
