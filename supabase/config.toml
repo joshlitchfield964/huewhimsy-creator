@@ -1,1 +1,8 @@
+
 project_id = "tbitpieidplhnshxbstx"
+
+[functions.get-runware-key]
+verify_jwt = false
+
+[functions.update-runware-key]
+verify_jwt = true

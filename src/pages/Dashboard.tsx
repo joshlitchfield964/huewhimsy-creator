@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/components/AuthProvider";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { ApiKeyForm } from "@/components/ApiKeyForm";
 
 export default function Dashboard() {
   const { session } = useAuth();
@@ -57,23 +58,32 @@ export default function Dashboard() {
                 <UserHistory />
               </TabsContent>
               
-              <TabsContent value="account" className="bg-white p-6 rounded-lg shadow-sm">
-                <h2 className="text-2xl font-semibold mb-4">Account Settings</h2>
-                {/* Account settings content would go here */}
-                <p className="text-gray-600 mb-4">
-                  Email: {session.user?.email}
-                </p>
+              <TabsContent value="account" className="bg-white p-6 rounded-lg shadow-sm space-y-8">
+                <div>
+                  <h2 className="text-2xl font-semibold mb-4">Account Settings</h2>
+                  <p className="text-gray-600 mb-4">
+                    Email: {session.user?.email}
+                  </p>
+                  
+                  <Button 
+                    variant="outline"
+                    onClick={async () => {
+                      await supabase.auth.signOut();
+                      navigate('/');
+                    }}
+                    className="mt-4"
+                  >
+                    Sign Out
+                  </Button>
+                </div>
                 
-                <Button 
-                  variant="outline"
-                  onClick={async () => {
-                    await supabase.auth.signOut();
-                    navigate('/');
-                  }}
-                  className="mt-4"
-                >
-                  Sign Out
-                </Button>
+                <div>
+                  <h2 className="text-2xl font-semibold mb-4">API Settings</h2>
+                  <p className="text-gray-600 mb-4">
+                    Update your Runware API key to enable coloring page generation.
+                  </p>
+                  <ApiKeyForm />
+                </div>
               </TabsContent>
             </Tabs>
           </div>
