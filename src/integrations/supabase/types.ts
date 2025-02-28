@@ -9,6 +9,39 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      coloring_pages: {
+        Row: {
+          created_at: string | null
+          id: string
+          image_url: string
+          is_public: boolean | null
+          likes: number | null
+          prompt: string
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          image_url: string
+          is_public?: boolean | null
+          likes?: number | null
+          prompt: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          image_url?: string
+          is_public?: boolean | null
+          likes?: number | null
+          prompt?: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       generation_settings: {
         Row: {
           age_group: Database["public"]["Enums"]["age_group"] | null

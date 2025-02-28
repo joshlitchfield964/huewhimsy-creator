@@ -2,78 +2,98 @@
 import { useState, useEffect } from "react";
 import {
   Download,
-  Heart,
+  Trash2,
   Printer,
   FileDown,
-  ChevronDown,
+  Eye,
+  EyeOff,
   Loader2,
+  Calendar,
 } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { coloringPageService, type ColoringPage } from "@/services/coloringPageService";
-import { jsPDF } from "jspdf";
 import { format } from "date-fns";
+import { jsPDF } from "jspdf";
+import { supabase } from "@/integrations/supabase/client";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
-type SortOption = "likes" | "newest";
-
-export const Gallery = () => {
-  const [sortBy, setSortBy] = useState<SortOption>("newest");
+export const UserHistory = () => {
   const [pages, setPages] = useState<ColoringPage[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [pageToDelete, setPageToDelete] = useState<ColoringPage | null>(null);
 
   useEffect(() => {
-    fetchColoringPages();
+    fetchUserColoringPages();
   }, []);
 
-  const fetchColoringPages = async () => {
+  const fetchUserColoringPages = async () => {
     setIsLoading(true);
     try {
-      const coloringPages = await coloringPageService.getPublicColoringPages();
-      setPages(coloringPages);
-      sortPages(coloringPages, sortBy);
+      const userPages = await coloringPageService.getUserColoringPages();
+      setPages(userPages);
     } catch (error) {
-      console.error("Error fetching coloring pages:", error);
-      toast.error("Failed to load coloring pages");
+      console.error("Error fetching user coloring pages:", error);
+      toast.error("Failed to load your coloring pages");
     } finally {
       setIsLoading(false);
     }
   };
 
-  const sortPages = (pagesToSort: ColoringPage[], option: SortOption) => {
-    const sortedPages = [...pagesToSort].sort((a, b) => {
-      if (option === "likes") {
-        return b.likes - a.likes;
-      }
-      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-    });
-    setPages(sortedPages);
-  };
+  const handleDeletePage = async () => {
+    if (!pageToDelete) return;
 
-  const handleSort = (option: SortOption) => {
-    setSortBy(option);
-    sortPages(pages, option);
-  };
-
-  const handleLike = async (id: string) => {
     try {
-      const success = await coloringPageService.likeColoringPage(id);
+      const success = await coloringPageService.deleteColoringPage(pageToDelete.id);
       if (success) {
-        setPages(
-          pages.map((page) =>
-            page.id === id ? { ...page, likes: page.likes + 1 } : page
-          )
-        );
-        toast.success("Added to favorites!");
+        setPages(pages.filter(page => page.id !== pageToDelete.id));
+        toast.success("Coloring page deleted successfully");
+        setDeleteDialogOpen(false);
+        setPageToDelete(null);
       }
     } catch (error) {
-      console.error("Error liking coloring page:", error);
-      toast.error("Failed to like coloring page");
+      console.error("Error deleting coloring page:", error);
+      toast.error("Failed to delete coloring page");
+    }
+  };
+
+  const handleToggleVisibility = async (page: ColoringPage) => {
+    try {
+      const { data, error } = await supabase
+        .from("coloring_pages")
+        .update({ is_public: !page.isPublic })
+        .eq("id", page.id)
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      setPages(pages.map(p => 
+        p.id === page.id 
+          ? { ...p, isPublic: !p.isPublic } 
+          : p
+      ));
+
+      toast.success(
+        page.isPublic 
+          ? "Coloring page is now private" 
+          : "Coloring page is now public"
+      );
+    } catch (error) {
+      console.error("Error updating visibility:", error);
+      toast.error("Failed to update coloring page visibility");
     }
   };
 
@@ -148,47 +168,25 @@ export const Gallery = () => {
   };
 
   return (
-    <div className="py-20 bg-white">
+    <div className="py-12">
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto space-y-8">
-          <div className="text-center space-y-4">
-            <h2 className="font-sans text-4xl font-bold">
-              Community{" "}
-              <span className="text-purple-500">Gallery</span>
-            </h2>
-            <p className="text-gray-600">
-              Discover and download coloring pages created by our community
-            </p>
-          </div>
-
-          <div className="flex justify-end mb-8">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="gap-2">
-                  Sort by: {sortBy === "likes" ? "Most Liked" : "Newest"}
-                  <ChevronDown className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem onClick={() => handleSort("newest")}>
-                  Newest
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleSort("likes")}>
-                  Most Liked
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+          <div className="flex items-center justify-between">
+            <h2 className="text-3xl font-bold">Your Coloring Pages</h2>
           </div>
 
           {isLoading ? (
             <div className="flex justify-center items-center py-20">
               <Loader2 className="h-10 w-10 text-primary animate-spin" />
-              <span className="ml-2 text-lg text-gray-600">Loading gallery...</span>
+              <span className="ml-2 text-lg text-gray-600">Loading your coloring pages...</span>
             </div>
           ) : pages.length === 0 ? (
-            <div className="text-center py-20">
-              <p className="text-gray-500 text-lg">No coloring pages found in the gallery yet.</p>
-              <p className="text-gray-400">Be the first to create and share one!</p>
+            <div className="text-center py-20 bg-secondary rounded-xl">
+              <p className="text-gray-500 text-lg">You haven't created any coloring pages yet.</p>
+              <p className="text-gray-400 mb-4">Head over to the generator to create your first masterpiece!</p>
+              <Button onClick={() => window.location.href = "/#generator"}>
+                Create Your First Coloring Page
+              </Button>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -203,14 +201,6 @@ export const Gallery = () => {
                     className="w-full aspect-square object-cover"
                   />
                   <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4">
-                    <Button
-                      variant="secondary"
-                      size="icon"
-                      onClick={() => handleLike(page.id)}
-                      className="h-10 w-10"
-                    >
-                      <Heart className="h-5 w-5" />
-                    </Button>
                     <Button
                       variant="secondary"
                       size="icon"
@@ -243,15 +233,41 @@ export const Gallery = () => {
                     >
                       <Printer className="h-5 w-5" />
                     </Button>
+                    <Button
+                      variant="destructive"
+                      size="icon"
+                      onClick={() => {
+                        setPageToDelete(page);
+                        setDeleteDialogOpen(true);
+                      }}
+                      className="h-10 w-10"
+                    >
+                      <Trash2 className="h-5 w-5" />
+                    </Button>
                   </div>
                   <div className="p-4">
                     <p className="text-sm text-gray-600 truncate">{page.prompt}</p>
                     <div className="flex items-center justify-between mt-2">
                       <div className="flex items-center gap-2">
-                        <Heart className="h-4 w-4 text-pink-500" />
-                        <span className="text-sm">{page.likes}</span>
+                        <Calendar className="h-4 w-4 text-gray-400" />
+                        <span className="text-xs text-gray-400">{formatDate(page.createdAt)}</span>
                       </div>
-                      <span className="text-xs text-gray-400">{formatDate(page.createdAt)}</span>
+                      <div className="flex items-center">
+                        <button 
+                          onClick={() => handleToggleVisibility(page)}
+                          className="text-xs flex items-center gap-1 text-gray-500 hover:text-gray-700"
+                        >
+                          {page.isPublic ? (
+                            <>
+                              <Eye className="h-3 w-3" /> Public
+                            </>
+                          ) : (
+                            <>
+                              <EyeOff className="h-3 w-3" /> Private
+                            </>
+                          )}
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -260,6 +276,23 @@ export const Gallery = () => {
           )}
         </div>
       </div>
+
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently delete this coloring page. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeletePage} className="bg-destructive text-destructive-foreground">
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

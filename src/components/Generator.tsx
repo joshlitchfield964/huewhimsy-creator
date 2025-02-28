@@ -10,9 +10,12 @@ import { AgeGroupSelect } from "./generator/AgeGroupSelect";
 import { ModelSelect, MODELS } from "./generator/ModelSelect";
 import { runwareService } from "@/services/runware";
 import { userGenerationService } from "@/services/userGenerationService";
+import { coloringPageService } from "@/services/coloringPageService";
 import { useAuth } from "./AuthProvider";
 import type { AgeGroup } from "@/services/runware";
 import { useNavigate } from "react-router-dom";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 
 const RESOLUTIONS = [
   { label: "Square (1024x1024)", value: { width: 1024, height: 1024 } },
@@ -29,6 +32,7 @@ export const Generator = () => {
   const [generatedImage, setGeneratedImage] = useState<string>("");
   const [freeGenerationAvailable, setFreeGenerationAvailable] = useState<boolean | null>(null);
   const [remainingToday, setRemainingToday] = useState<number | null>(null);
+  const [makePublic, setMakePublic] = useState(true);
   const { session } = useAuth();
   const navigate = useNavigate();
 
@@ -99,6 +103,22 @@ export const Generator = () => {
       }
 
       setGeneratedImage(result.imageURL);
+      
+      // Save the coloring page to the database
+      if (session) {
+        await coloringPageService.saveColoringPage({
+          imageUrl: result.imageURL,
+          prompt: prompt,
+          isPublic: makePublic,
+        });
+        
+        if (makePublic) {
+          toast.success("Your coloring page has been added to the gallery!");
+        } else {
+          toast.success("Your coloring page has been saved to your history!");
+        }
+      }
+      
       toast.success("Your coloring page is ready!");
     } catch (error: any) {
       toast.error(error.message || "Failed to generate image");
@@ -155,6 +175,20 @@ export const Generator = () => {
                 setResolution={setResolution}
                 options={RESOLUTIONS}
               />
+              
+              {session && (
+                <div className="flex items-center space-x-2">
+                  <Switch 
+                    id="make-public" 
+                    checked={makePublic}
+                    onCheckedChange={setMakePublic}
+                  />
+                  <Label htmlFor="make-public" className="text-sm">
+                    Share in public gallery
+                  </Label>
+                </div>
+              )}
+              
               <Button
                 onClick={handleGenerate}
                 disabled={isGenerating || (session && !freeGenerationAvailable)}
