@@ -172,15 +172,19 @@ export default function Dashboard() {
                             <div className="flex justify-between">
                               <span className="text-muted-foreground">Today's Usage:</span>
                               <span className="font-medium">
-                                {generationStats ? generationStats.remainingToday === 1 ? '0/1' : '1/1' : 'N/A'}
+                                {generationStats 
+                                  ? subscriptionData 
+                                    ? 'Unlimited daily' 
+                                    : `${5 - generationStats.remainingToday}/${5}`
+                                  : 'N/A'}
                               </span>
                             </div>
                             <div className="flex justify-between">
                               <span className="text-muted-foreground">Monthly Limit:</span>
                               <span className="font-medium">
                                 {subscriptionData 
-                                  ? `${generationStats?.count || 0}/${subscriptionData.monthly_generation_limit}` 
-                                  : '1/day (Free)'}
+                                  ? `${subscriptionData.monthly_generation_limit - (generationStats?.remainingMonthly || 0)}/${subscriptionData.monthly_generation_limit}` 
+                                  : '5/day (Free)'}
                               </span>
                             </div>
                             <div className="flex justify-between">
@@ -248,7 +252,7 @@ export default function Dashboard() {
                           {!subscriptionData && (
                             <div className="bg-muted p-4 rounded-lg">
                               <p className="text-sm">
-                                You're currently on the <strong>Free Plan</strong> which allows 1 coloring page generation per day. 
+                                You're currently on the <strong>Free Plan</strong> which allows 5 coloring pages per day. 
                                 Upgrade to a paid plan to create more coloring pages and access additional features.
                               </p>
                               <Button 
@@ -264,7 +268,7 @@ export default function Dashboard() {
                             <div className="bg-muted p-4 rounded-lg">
                               <p className="text-sm">
                                 You're subscribed to the <strong>{subscriptionData.plan_name} Plan</strong> which gives you 
-                                {subscriptionData.monthly_generation_limit} coloring pages per month.
+                                {' '}{subscriptionData.monthly_generation_limit} coloring pages per month.
                               </p>
                               <Button 
                                 variant="outline"

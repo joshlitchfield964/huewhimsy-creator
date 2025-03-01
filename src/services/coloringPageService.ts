@@ -25,28 +25,35 @@ export const coloringPageService = {
     try {
       // Get current user
       const { data: session } = await supabase.auth.getSession();
-      if (!session.session?.user) {
-        throw new Error("User not authenticated");
+      
+      // Define the insert data
+      const insertData: any = {
+        image_url: imageUrl,
+        prompt,
+        is_public: isPublic
+      };
+      
+      // Add user_id if authenticated
+      if (session?.session?.user) {
+        insertData.user_id = session.session.user.id;
       }
       
       const { data, error } = await supabase
         .from("coloring_pages")
-        .insert({
-          image_url: imageUrl,
-          prompt,
-          is_public: isPublic,
-          user_id: session.session.user.id,
-        })
+        .insert(insertData)
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error inserting coloring page:", error);
+        throw error;
+      }
       
       return data ? {
         id: data.id,
         imageUrl: data.image_url,
         prompt: data.prompt,
-        likes: data.likes,
+        likes: data.likes || 0,
         isPublic: data.is_public,
         createdAt: data.created_at,
         userId: data.user_id,
@@ -71,7 +78,7 @@ export const coloringPageService = {
         throw error;
       }
 
-      return data.map(page => ({
+      return data ? data.map(page => ({
         id: page.id,
         imageUrl: page.image_url,
         prompt: page.prompt,
@@ -79,7 +86,7 @@ export const coloringPageService = {
         isPublic: page.is_public,
         createdAt: page.created_at,
         userId: page.user_id,
-      }));
+      })) : [];
     } catch (error) {
       console.error("Error fetching public coloring pages:", error);
       return [];
@@ -91,7 +98,7 @@ export const coloringPageService = {
     try {
       // Get current user
       const { data: session } = await supabase.auth.getSession();
-      if (!session.session?.user) {
+      if (!session?.session?.user) {
         return [];
       }
       
@@ -106,7 +113,7 @@ export const coloringPageService = {
         throw error;
       }
 
-      return data.map(page => ({
+      return data ? data.map(page => ({
         id: page.id,
         imageUrl: page.image_url,
         prompt: page.prompt,
@@ -114,7 +121,7 @@ export const coloringPageService = {
         isPublic: page.is_public,
         createdAt: page.created_at,
         userId: page.user_id,
-      }));
+      })) : [];
     } catch (error) {
       console.error("Error fetching user coloring pages:", error);
       return [];

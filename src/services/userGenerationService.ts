@@ -18,45 +18,73 @@ export const userGenerationService = {
     try {
       // Check if user is authenticated
       const { data: session } = await supabase.auth.getSession();
-      if (!session.session?.user) {
-        return false;
-      }
-
-      const userId = session.session.user.id;
+      
+      // Set daily limits based on user status
+      const DAILY_LIMIT_ANONYMOUS = 3;  // Non-registered users: 3 per day
+      const DAILY_LIMIT_REGISTERED = 5; // Free registered users: 5 per day
       
       // First check if user has a paid subscription
-      const { data: subscriptionData, error: subscriptionError } = await supabase
-        .from('subscriptions')
-        .select('*')
-        .eq('user_id', userId)
-        .eq('status', 'active')
-        .order('created_at', { ascending: false })
-        .limit(1);
+      if (session?.session?.user) {
+        const userId = session.session.user.id;
         
-      if (subscriptionData && subscriptionData.length > 0) {
-        // Paid users always have generation available
-        return true;
+        const { data: subscriptionData, error: subscriptionError } = await supabase
+          .from('subscriptions')
+          .select('*')
+          .eq('user_id', userId)
+          .eq('status', 'active')
+          .order('created_at', { ascending: false })
+          .limit(1);
+          
+        if (subscriptionData && subscriptionData.length > 0) {
+          // Paid users always have generation available (subject to monthly limit)
+          return true;
+        }
       }
       
-      // For free users, check daily limit
+      // For anonymous or free registered users, check daily limit
       const today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
 
       // Get the latest generation record for today
-      const { data, error } = await supabase
-        .from('generation_stats')
-        .select('*')
-        .eq('user_id', userId)
-        .gte('created_at', today)
-        .order('created_at', { ascending: false })
-        .limit(1);
+      if (session?.session?.user) {
+        // For registered users
+        const userId = session.session.user.id;
+        const { data, error } = await supabase
+          .from('generation_stats')
+          .select('*')
+          .eq('user_id', userId)
+          .gte('created_at', today)
+          .order('created_at', { ascending: false })
+          .limit(1);
 
-      if (error) {
-        console.error('Error checking generation availability:', error);
-        return false;
+        if (error) {
+          console.error('Error checking generation availability:', error);
+          return false;
+        }
+
+        // If no records for today or count is less than daily limit, user can generate
+        return !data || data.length === 0 || data[0].daily_count < DAILY_LIMIT_REGISTERED;
+      } else {
+        // For anonymous users, use localStorage to track generations
+        const localGenerations = localStorage.getItem('daily_generations');
+        const today = new Date().toISOString().split('T')[0];
+        
+        if (localGenerations) {
+          try {
+            const parsed = JSON.parse(localGenerations);
+            if (parsed.date === today) {
+              return parsed.count < DAILY_LIMIT_ANONYMOUS;
+            }
+          } catch (e) {
+            // If there's an error parsing, reset the counter
+            localStorage.setItem('daily_generations', JSON.stringify({ date: today, count: 0 }));
+            return true;
+          }
+        }
+        
+        // Initialize counter if it doesn't exist
+        localStorage.setItem('daily_generations', JSON.stringify({ date: today, count: 0 }));
+        return true;
       }
-
-      // If no records for today or count is less than daily limit (1), user can generate
-      return !data || data.length === 0 || data[0].daily_count < 1;
     } catch (error) {
       console.error('Error in checkFreeGenerationAvailability:', error);
       return false;
@@ -67,46 +95,69 @@ export const userGenerationService = {
   async recordGeneration(): Promise<void> {
     try {
       const { data: session } = await supabase.auth.getSession();
-      if (!session.session?.user) {
-        return;
-      }
+      
+      if (session?.session?.user) {
+        // For registered users
+        const userId = session.session.user.id;
+        const today = new Date().toISOString().split('T')[0];
 
-      const userId = session.session.user.id;
-      const today = new Date().toISOString().split('T')[0];
-
-      // Get the latest generation record for today
-      const { data, error } = await supabase
-        .from('generation_stats')
-        .select('*')
-        .eq('user_id', userId)
-        .gte('created_at', today)
-        .order('created_at', { ascending: false })
-        .limit(1);
-
-      if (error) {
-        console.error('Error recording generation:', error);
-        return;
-      }
-
-      if (!data || data.length === 0) {
-        // First generation today
-        await supabase
+        // Get the latest generation record for today
+        const { data, error } = await supabase
           .from('generation_stats')
-          .insert({
-            user_id: userId,
-            daily_count: 1,
-            monthly_count: 1
-          });
+          .select('*')
+          .eq('user_id', userId)
+          .gte('created_at', today)
+          .order('created_at', { ascending: false })
+          .limit(1);
+
+        if (error) {
+          console.error('Error recording generation:', error);
+          return;
+        }
+
+        if (!data || data.length === 0) {
+          // First generation today
+          await supabase
+            .from('generation_stats')
+            .insert({
+              user_id: userId,
+              daily_count: 1,
+              monthly_count: 1
+            });
+        } else {
+          // Update existing record
+          await supabase
+            .from('generation_stats')
+            .update({
+              daily_count: data[0].daily_count + 1,
+              monthly_count: data[0].monthly_count + 1,
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', data[0].id);
+        }
       } else {
-        // Update existing record
-        await supabase
-          .from('generation_stats')
-          .update({
-            daily_count: data[0].daily_count + 1,
-            monthly_count: data[0].monthly_count + 1,
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', data[0].id);
+        // For anonymous users, update localStorage
+        const localGenerations = localStorage.getItem('daily_generations');
+        const today = new Date().toISOString().split('T')[0];
+        
+        if (localGenerations) {
+          try {
+            const parsed = JSON.parse(localGenerations);
+            if (parsed.date === today) {
+              parsed.count += 1;
+              localStorage.setItem('daily_generations', JSON.stringify(parsed));
+            } else {
+              // New day
+              localStorage.setItem('daily_generations', JSON.stringify({ date: today, count: 1 }));
+            }
+          } catch (e) {
+            // If there's an error parsing, reset the counter
+            localStorage.setItem('daily_generations', JSON.stringify({ date: today, count: 1 }));
+          }
+        } else {
+          // Initialize counter if it doesn't exist
+          localStorage.setItem('daily_generations', JSON.stringify({ date: today, count: 1 }));
+        }
       }
     } catch (error) {
       console.error('Error in recordGeneration:', error);
@@ -116,9 +167,41 @@ export const userGenerationService = {
   // Get user generation statistics
   async getUserGenerationStats(): Promise<UserGenerationStats | null> {
     try {
+      const DAILY_LIMIT_ANONYMOUS = 3;  // Non-registered users: 3 per day
+      const DAILY_LIMIT_REGISTERED = 5; // Free registered users: 5 per day
+      
       const { data: session } = await supabase.auth.getSession();
-      if (!session.session?.user) {
-        return null;
+      
+      if (!session?.session?.user) {
+        // For anonymous users
+        const localGenerations = localStorage.getItem('daily_generations');
+        const today = new Date().toISOString().split('T')[0];
+        let count = 0;
+        
+        if (localGenerations) {
+          try {
+            const parsed = JSON.parse(localGenerations);
+            if (parsed.date === today) {
+              count = parsed.count;
+            }
+          } catch (e) {
+            // If there's an error parsing, reset the counter
+            localStorage.setItem('daily_generations', JSON.stringify({ date: today, count: 0 }));
+          }
+        } else {
+          // Initialize counter if it doesn't exist
+          localStorage.setItem('daily_generations', JSON.stringify({ date: today, count: 0 }));
+        }
+        
+        return {
+          count: count,
+          lastGeneratedAt: null,
+          remainingToday: DAILY_LIMIT_ANONYMOUS - count,
+          freeGenerationAvailable: count < DAILY_LIMIT_ANONYMOUS,
+          isPaidUser: false,
+          monthlyLimit: null,
+          remainingMonthly: null
+        };
       }
 
       const userId = session.session.user.id;
@@ -138,7 +221,9 @@ export const userGenerationService = {
       }
       
       const isPaidUser = subscriptionData && subscriptionData.length > 0;
-      const monthlyLimit = isPaidUser ? subscriptionData[0].monthly_generation_limit : null;
+      const monthlyLimit = isPaidUser ? 
+        (subscriptionData[0].plan_price === 5 ? 300 : 500) : // 5$ plan: 300 images, 8$ plan: 500 images
+        null;
       
       // Get the generation stats
       const { data, error } = await supabase
@@ -159,7 +244,7 @@ export const userGenerationService = {
         return {
           count: 0,
           lastGeneratedAt: null,
-          remainingToday: isPaidUser ? 999 : 1, // Free user gets 1 per day, paid users unlimited daily
+          remainingToday: isPaidUser ? 999 : DAILY_LIMIT_REGISTERED, // Free user gets 5 per day, paid users unlimited daily
           freeGenerationAvailable: true,
           isPaidUser,
           monthlyLimit,
@@ -194,8 +279,8 @@ export const userGenerationService = {
       return {
         count: lastRecord.monthly_count,
         lastGeneratedAt: lastRecord.created_at,
-        remainingToday: isPaidUser ? 999 : (isToday ? Math.max(0, 1 - lastRecord.daily_count) : 1),
-        freeGenerationAvailable: isPaidUser ? true : (!isToday || lastRecord.daily_count < 1),
+        remainingToday: isPaidUser ? 999 : (isToday ? Math.max(0, DAILY_LIMIT_REGISTERED - lastRecord.daily_count) : DAILY_LIMIT_REGISTERED),
+        freeGenerationAvailable: isPaidUser ? true : (!isToday || lastRecord.daily_count < DAILY_LIMIT_REGISTERED),
         isPaidUser,
         monthlyLimit,
         remainingMonthly

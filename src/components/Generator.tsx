@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Wand2, Info } from "lucide-react";
@@ -39,20 +38,17 @@ export const Generator = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Check free generation availability when component mounts or session changes
     const checkAvailability = async () => {
-      if (session) {
-        try {
-          const stats = await userGenerationService.getUserGenerationStats();
-          if (stats) {
-            setFreeGenerationAvailable(stats.freeGenerationAvailable);
-            setRemainingToday(stats.remainingToday);
-            setIsPaidUser(stats.isPaidUser);
-            setRemainingMonthly(stats.remainingMonthly);
-          }
-        } catch (error) {
-          console.error("Error checking generation availability:", error);
+      try {
+        const stats = await userGenerationService.getUserGenerationStats();
+        if (stats) {
+          setFreeGenerationAvailable(stats.freeGenerationAvailable);
+          setRemainingToday(stats.remainingToday);
+          setIsPaidUser(stats.isPaidUser);
+          setRemainingMonthly(stats.remainingMonthly);
         }
+      } catch (error) {
+        console.error("Error checking generation availability:", error);
       }
     };
 
@@ -65,26 +61,21 @@ export const Generator = () => {
       return;
     }
 
-    // If user is not logged in, prompt them to log in
-    if (!session) {
-      toast.info("Please sign in to generate coloring pages");
-      navigate("/auth");
-      return;
-    }
-
-    // Check if user has reached their limits
     if (!freeGenerationAvailable && !isPaidUser) {
-      toast("You've used your free generation for today", {
-        description: "Upgrade to a paid plan for more generations.",
+      const message = session 
+        ? "You've used your 5 free generations for today" 
+        : "You've used your 3 free generations for today";
+      
+      toast(message, {
+        description: "Sign up or upgrade to a paid plan for more generations.",
         action: {
-          label: "View Plans",
-          onClick: () => navigate("/pricing"),
+          label: session ? "View Plans" : "Sign Up",
+          onClick: () => navigate(session ? "/pricing" : "/auth"),
         },
       });
       return;
     }
     
-    // Check if paid user has reached monthly limit
     if (isPaidUser && remainingMonthly !== null && remainingMonthly <= 0) {
       toast("You've reached your monthly generation limit", {
         description: "Your plan allows a limited number of generations per month.",
@@ -108,10 +99,8 @@ export const Generator = () => {
         model: model,
       });
 
-      // Record this generation
       await userGenerationService.recordGeneration();
       
-      // Update the remaining generations for today
       const stats = await userGenerationService.getUserGenerationStats();
       if (stats) {
         setFreeGenerationAvailable(stats.freeGenerationAvailable);
@@ -122,17 +111,16 @@ export const Generator = () => {
 
       setGeneratedImage(result.imageURL);
       
-      // Save the coloring page to the database
-      if (session) {
-        await coloringPageService.saveColoringPage({
-          imageUrl: result.imageURL,
-          prompt: prompt,
-          isPublic: makePublic,
-        });
-        
+      const savedPage = await coloringPageService.saveColoringPage({
+        imageUrl: result.imageURL,
+        prompt: prompt,
+        isPublic: makePublic,
+      });
+      
+      if (savedPage) {
         if (makePublic) {
           toast.success("Your coloring page has been added to the gallery!");
-        } else {
+        } else if (session) {
           toast.success("Your coloring page has been saved to your history!");
         }
       }
@@ -160,20 +148,20 @@ export const Generator = () => {
               Describe what you'd like to color, choose your preferred size, and let our{" "}
               <span className="text-orange-500 font-semibold">AI magic</span> do the work.
             </p>
-            {session && (
-              <div className="flex items-center justify-center gap-2 text-sm font-medium">
-                <Info className="h-4 w-4 text-blue-500" />
-                {isPaidUser ? (
+            <div className="flex items-center justify-center gap-2 text-sm font-medium">
+              <Info className="h-4 w-4 text-blue-500" />
+              {isPaidUser ? (
+                <span className="text-blue-600">
+                  You have {remainingMonthly !== null ? `${remainingMonthly} of ${remainingMonthly + (remainingMonthly === 0 ? 0 : 1) - 1}` : 'unlimited'} generations remaining this month
+                </span>
+              ) : session ? (
+                remainingToday && remainingToday > 0 ? (
                   <span className="text-blue-600">
-                    You have {remainingMonthly !== null ? `${remainingMonthly} of ${remainingMonthly + (remainingMonthly === 0 ? 0 : 1) - 1}` : 'unlimited'} generations remaining this month
-                  </span>
-                ) : remainingToday && remainingToday > 0 ? (
-                  <span className="text-blue-600">
-                    You have {remainingToday} free generation{remainingToday !== 1 ? 's' : ''} remaining today
+                    You have {remainingToday} free generation{remainingToday !== 1 ? 's' : ''} remaining today (5 per day)
                   </span>
                 ) : (
                   <span className="text-gray-600">
-                    You've used your free generation for today. 
+                    You've used your free generations for today. 
                     <Button 
                       variant="link" 
                       className="px-1 h-auto text-primary" 
@@ -182,9 +170,26 @@ export const Generator = () => {
                       Upgrade for more
                     </Button>
                   </span>
-                )}
-              </div>
-            )}
+                )
+              ) : (
+                remainingToday && remainingToday > 0 ? (
+                  <span className="text-blue-600">
+                    You have {remainingToday} free generation{remainingToday !== 1 ? 's' : ''} remaining today (3 per day)
+                  </span>
+                ) : (
+                  <span className="text-gray-600">
+                    You've used your free generations for today. 
+                    <Button 
+                      variant="link" 
+                      className="px-1 h-auto text-primary" 
+                      onClick={() => navigate('/auth')}
+                    >
+                      Sign up for more
+                    </Button>
+                  </span>
+                )
+              )}
+            </div>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -213,7 +218,7 @@ export const Generator = () => {
               
               <Button
                 onClick={handleGenerate}
-                disabled={isGenerating || (session && !isPaidUser && !freeGenerationAvailable) || (isPaidUser && remainingMonthly !== null && remainingMonthly <= 0)}
+                disabled={isGenerating || (!freeGenerationAvailable && !isPaidUser) || (isPaidUser && remainingMonthly !== null && remainingMonthly <= 0)}
                 className="w-full bg-primary hover:bg-primary/90"
                 size="lg"
               >
@@ -234,7 +239,7 @@ export const Generator = () => {
                     onClick={() => navigate('/auth')}
                   >
                     Sign in
-                  </Button> to get 1 free generation per day
+                  </Button> to get 5 free generations per day instead of 3
                 </p>
               )}
             </div>
