@@ -7,6 +7,9 @@ interface UserGenerationStats {
   lastGeneratedAt: string | null;
   remainingToday: number;
   freeGenerationAvailable: boolean;
+  isPaidUser: boolean;
+  monthlyLimit: number | null;
+  remainingMonthly: number | null;
 }
 
 export const userGenerationService = {
@@ -20,6 +23,22 @@ export const userGenerationService = {
       }
 
       const userId = session.session.user.id;
+      
+      // First check if user has a paid subscription
+      const { data: subscriptionData, error: subscriptionError } = await supabase
+        .from('subscriptions')
+        .select('*')
+        .eq('user_id', userId)
+        .eq('status', 'active')
+        .order('created_at', { ascending: false })
+        .limit(1);
+        
+      if (subscriptionData && subscriptionData.length > 0) {
+        // Paid users always have generation available
+        return true;
+      }
+      
+      // For free users, check daily limit
       const today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
 
       // Get the latest generation record for today
@@ -105,7 +124,23 @@ export const userGenerationService = {
       const userId = session.session.user.id;
       const today = new Date().toISOString().split('T')[0];
 
-      // Get the latest generation record
+      // First check if user has a paid subscription
+      const { data: subscriptionData, error: subscriptionError } = await supabase
+        .from('subscriptions')
+        .select('*')
+        .eq('user_id', userId)
+        .eq('status', 'active')
+        .order('created_at', { ascending: false })
+        .limit(1);
+      
+      if (subscriptionError) {
+        console.error('Error checking subscription:', subscriptionError);
+      }
+      
+      const isPaidUser = subscriptionData && subscriptionData.length > 0;
+      const monthlyLimit = isPaidUser ? subscriptionData[0].monthly_generation_limit : null;
+      
+      // Get the generation stats
       const { data, error } = await supabase
         .from('generation_stats')
         .select('*')
@@ -117,25 +152,53 @@ export const userGenerationService = {
         console.error('Error getting user generation stats:', error);
         return null;
       }
-
+      
+      // Calculate stats based on user type
       if (!data || data.length === 0) {
+        // No stats yet
         return {
           count: 0,
           lastGeneratedAt: null,
-          remainingToday: 1, // Free user gets 1 per day
-          freeGenerationAvailable: true
+          remainingToday: isPaidUser ? 999 : 1, // Free user gets 1 per day, paid users unlimited daily
+          freeGenerationAvailable: true,
+          isPaidUser,
+          monthlyLimit,
+          remainingMonthly: monthlyLimit // No generations used yet
         };
       }
 
       const lastRecord = data[0];
       const lastGeneratedDate = new Date(lastRecord.created_at).toISOString().split('T')[0];
       const isToday = lastGeneratedDate === today;
+      
+      // For paid users, check monthly limit
+      let remainingMonthly = null;
+      if (isPaidUser && monthlyLimit !== null) {
+        // Get the current month's usage
+        const currentMonth = new Date().toISOString().substring(0, 7); // YYYY-MM format
+        const { data: monthData, error: monthError } = await supabase
+          .from('generation_stats')
+          .select('monthly_count')
+          .eq('user_id', userId)
+          .gte('created_at', `${currentMonth}-01`) // First day of current month
+          .order('created_at', { ascending: false })
+          .limit(1);
+          
+        if (!monthError && monthData && monthData.length > 0) {
+          remainingMonthly = Math.max(0, monthlyLimit - monthData[0].monthly_count);
+        } else {
+          remainingMonthly = monthlyLimit; // If no data for this month, full limit available
+        }
+      }
 
       return {
         count: lastRecord.monthly_count,
         lastGeneratedAt: lastRecord.created_at,
-        remainingToday: isToday ? Math.max(0, 1 - lastRecord.daily_count) : 1,
-        freeGenerationAvailable: !isToday || lastRecord.daily_count < 1
+        remainingToday: isPaidUser ? 999 : (isToday ? Math.max(0, 1 - lastRecord.daily_count) : 1),
+        freeGenerationAvailable: isPaidUser ? true : (!isToday || lastRecord.daily_count < 1),
+        isPaidUser,
+        monthlyLimit,
+        remainingMonthly
       };
     } catch (error) {
       console.error('Error in getUserGenerationStats:', error);

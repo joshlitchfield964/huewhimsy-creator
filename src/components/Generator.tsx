@@ -32,6 +32,8 @@ export const Generator = () => {
   const [generatedImage, setGeneratedImage] = useState<string>("");
   const [freeGenerationAvailable, setFreeGenerationAvailable] = useState<boolean | null>(null);
   const [remainingToday, setRemainingToday] = useState<number | null>(null);
+  const [isPaidUser, setIsPaidUser] = useState<boolean>(false);
+  const [remainingMonthly, setRemainingMonthly] = useState<number | null>(null);
   const [makePublic, setMakePublic] = useState(true);
   const { session } = useAuth();
   const navigate = useNavigate();
@@ -45,6 +47,8 @@ export const Generator = () => {
           if (stats) {
             setFreeGenerationAvailable(stats.freeGenerationAvailable);
             setRemainingToday(stats.remainingToday);
+            setIsPaidUser(stats.isPaidUser);
+            setRemainingMonthly(stats.remainingMonthly);
           }
         } catch (error) {
           console.error("Error checking generation availability:", error);
@@ -68,10 +72,22 @@ export const Generator = () => {
       return;
     }
 
-    // Check if free user has reached their daily limit
-    if (!freeGenerationAvailable) {
+    // Check if user has reached their limits
+    if (!freeGenerationAvailable && !isPaidUser) {
       toast("You've used your free generation for today", {
         description: "Upgrade to a paid plan for more generations.",
+        action: {
+          label: "View Plans",
+          onClick: () => navigate("/pricing"),
+        },
+      });
+      return;
+    }
+    
+    // Check if paid user has reached monthly limit
+    if (isPaidUser && remainingMonthly !== null && remainingMonthly <= 0) {
+      toast("You've reached your monthly generation limit", {
+        description: "Your plan allows a limited number of generations per month.",
         action: {
           label: "View Plans",
           onClick: () => navigate("/pricing"),
@@ -100,6 +116,8 @@ export const Generator = () => {
       if (stats) {
         setFreeGenerationAvailable(stats.freeGenerationAvailable);
         setRemainingToday(stats.remainingToday);
+        setIsPaidUser(stats.isPaidUser);
+        setRemainingMonthly(stats.remainingMonthly);
       }
 
       setGeneratedImage(result.imageURL);
@@ -142,10 +160,14 @@ export const Generator = () => {
               Describe what you'd like to color, choose your preferred size, and let our{" "}
               <span className="text-orange-500 font-semibold">AI magic</span> do the work.
             </p>
-            {session && remainingToday !== null && (
+            {session && (
               <div className="flex items-center justify-center gap-2 text-sm font-medium">
                 <Info className="h-4 w-4 text-blue-500" />
-                {remainingToday > 0 ? (
+                {isPaidUser ? (
+                  <span className="text-blue-600">
+                    You have {remainingMonthly !== null ? `${remainingMonthly} of ${remainingMonthly + (remainingMonthly === 0 ? 0 : 1) - 1}` : 'unlimited'} generations remaining this month
+                  </span>
+                ) : remainingToday && remainingToday > 0 ? (
                   <span className="text-blue-600">
                     You have {remainingToday} free generation{remainingToday !== 1 ? 's' : ''} remaining today
                   </span>
@@ -191,7 +213,7 @@ export const Generator = () => {
               
               <Button
                 onClick={handleGenerate}
-                disabled={isGenerating || (session && !freeGenerationAvailable)}
+                disabled={isGenerating || (session && !isPaidUser && !freeGenerationAvailable) || (isPaidUser && remainingMonthly !== null && remainingMonthly <= 0)}
                 className="w-full bg-primary hover:bg-primary/90"
                 size="lg"
               >

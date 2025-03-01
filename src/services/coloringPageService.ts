@@ -23,12 +23,19 @@ export const coloringPageService = {
     isPublic?: boolean;
   }): Promise<ColoringPage | null> {
     try {
+      // Get current user
+      const { data: session } = await supabase.auth.getSession();
+      if (!session.session?.user) {
+        throw new Error("User not authenticated");
+      }
+      
       const { data, error } = await supabase
         .from("coloring_pages")
         .insert({
           image_url: imageUrl,
           prompt,
           is_public: isPublic,
+          user_id: session.session.user.id,
         })
         .select()
         .single();
@@ -59,13 +66,16 @@ export const coloringPageService = {
         .eq("is_public", true)
         .order("created_at", { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error in getPublicColoringPages:", error);
+        throw error;
+      }
 
       return data.map(page => ({
         id: page.id,
         imageUrl: page.image_url,
         prompt: page.prompt,
-        likes: page.likes,
+        likes: page.likes || 0,
         isPublic: page.is_public,
         createdAt: page.created_at,
         userId: page.user_id,
@@ -79,18 +89,28 @@ export const coloringPageService = {
   // Get user's coloring page history
   async getUserColoringPages(): Promise<ColoringPage[]> {
     try {
+      // Get current user
+      const { data: session } = await supabase.auth.getSession();
+      if (!session.session?.user) {
+        return [];
+      }
+      
       const { data, error } = await supabase
         .from("coloring_pages")
         .select("*")
+        .eq("user_id", session.session.user.id)
         .order("created_at", { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error in getUserColoringPages:", error);
+        throw error;
+      }
 
       return data.map(page => ({
         id: page.id,
         imageUrl: page.image_url,
         prompt: page.prompt,
-        likes: page.likes,
+        likes: page.likes || 0,
         isPublic: page.is_public,
         createdAt: page.created_at,
         userId: page.user_id,
