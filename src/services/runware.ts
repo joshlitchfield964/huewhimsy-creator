@@ -1,3 +1,4 @@
+
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -131,20 +132,31 @@ export class RunwareService {
 
   private enhancePrompt(prompt: string, ageGroup?: AgeGroup, model?: string): string {
     const ageGroupPrompts = {
-      toddler: "very simple, bold outlines, large shapes, minimal details",
-      preschool: "simple, clear outlines, basic shapes, few details",
-      school: "moderate detail, clear lines, engaging elements",
-      teen: "more complex patterns, detailed designs, interesting elements",
-      adult: "intricate patterns, sophisticated designs, detailed artwork"
+      toddler: "extremely simple with very thick, bold outlines, large basic shapes, minimal details, perfect for toddlers",
+      preschool: "simple designs with clear thick outlines, basic recognizable shapes, limited details, easy for preschoolers to color",
+      school: "moderate detail with defined outlines, engaging elements but not too complex, perfect for elementary school children",
+      teen: "more intricate patterns with clear lines, interesting details and creative designs appealing to teenagers",
+      adult: "sophisticated designs with detailed patterns, intricate elements, and complex arrangements suitable for adults"
     };
 
-    const basePrompt = `Black and white lineart suitable for coloring pages, ${prompt}, ${ageGroup ? ageGroupPrompts[ageGroup] : ""}, high contrast, clean lines, no shading or grayscale`;
+    // Core coloring page requirements
+    const coreRequirements = "pure black and white line art for coloring books, crisp black lines on white background, high contrast";
+    
+    // Style specifics
+    const styleDetails = "no grayscale, no shading, no color, clear separations between elements, easily colorable spaces";
+    
+    // Quality enhancements
+    const qualityDetails = "professional quality, clean lines, well-defined borders, printable quality";
 
+    // Build enhanced prompt
+    let enhancedPrompt = `${coreRequirements}, ${prompt}, ${ageGroup ? ageGroupPrompts[ageGroup] : ""}, ${styleDetails}, ${qualityDetails}`;
+
+    // Model-specific enhancements
     if (model === "runware:flux-dev@1") {
-      return `${basePrompt}, line art style, coloring book style`;
+      enhancedPrompt = `${enhancedPrompt}, coloring book illustration style, professional line art`;
     }
 
-    return basePrompt.trim();
+    return enhancedPrompt.trim();
   }
 
   async generateImage(params: GenerateImageParams): Promise<GeneratedImage> {
