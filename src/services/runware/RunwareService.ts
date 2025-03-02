@@ -1,33 +1,20 @@
 
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-
-const API_ENDPOINT = "wss://ws-api.runware.ai/v1";
-
-export type AgeGroup = "toddler" | "preschool" | "school" | "teen" | "adult";
-
-export interface GenerateImageParams {
-  positivePrompt: string;
-  model?: string;
-  width?: number;
-  height?: number;
-  numberResults?: number;
-  outputFormat?: string;
-  CFGScale?: number;
-  scheduler?: string;
-  strength?: number;
-  promptWeighting?: "compel" | "sdEmbeds";
-  seed?: number | null;
-  lora?: string[];
-  ageGroup?: AgeGroup;
-}
-
-export interface GeneratedImage {
-  imageURL: string;
-  positivePrompt: string;
-  seed: number;
-  NSFWContent: boolean;
-}
+import { GenerateImageParams, GeneratedImage } from "./types";
+import { enhancePrompt } from "./promptUtils";
+import { 
+  API_ENDPOINT, 
+  DEFAULT_MODEL,
+  DEFAULT_WIDTH,
+  DEFAULT_HEIGHT,
+  DEFAULT_OUTPUT_FORMAT,
+  DEFAULT_CFG_SCALE,
+  DEFAULT_SCHEDULER,
+  DEFAULT_STRENGTH,
+  DEFAULT_NUMBER_RESULTS,
+  DEFAULT_STEPS
+} from "./config";
 
 export class RunwareService {
   private ws: WebSocket | null = null;
@@ -130,48 +117,6 @@ export class RunwareService {
     });
   }
 
-  private enhancePrompt(prompt: string, ageGroup?: AgeGroup, model?: string): string {
-    // Core coloring page attributes that apply to all age groups
-    const coreAttributes = "black and white smooth and clean lineart, high contrast, crisp lines on white background, no grayscale, no shading, no color";
-    
-    // Create specific prompt templates based on age group
-    let ageSpecificPrompt = "";
-    
-    switch(ageGroup) {
-      case "toddler":
-        ageSpecificPrompt = `${coreAttributes} of ${prompt}, designed with extra-large, simple shapes and thick outlines, ensuring easy coloring for toddlers aged 1-3 years`;
-        break;
-      case "preschool":
-        ageSpecificPrompt = `${coreAttributes} of ${prompt}, featuring bold outlines, minimal intricate details, and engaging, recognizable elements, perfect for preschoolers aged 3-5 years`;
-        break;
-      case "school":
-        ageSpecificPrompt = `${coreAttributes} of ${prompt}, with moderate details, clear and fun designs, and interactive elements, ideal for kids aged 6-12 years to enjoy coloring`;
-        break;
-      case "teen":
-        ageSpecificPrompt = `${coreAttributes} of ${prompt}, featuring intricate patterns, detailed backgrounds, and stylish elements, catering to the artistic preferences of teens aged 13-17 years`;
-        break;
-      case "adult":
-        ageSpecificPrompt = `${coreAttributes} of ${prompt}, designed with high-detail elements, intricate patterns, and artistic compositions, providing a relaxing and immersive coloring experience for adults aged 18+`;
-        break;
-      default:
-        // If no age group is selected, use a general template
-        ageSpecificPrompt = `${coreAttributes} of ${prompt}, with well-defined borders and easily colorable spaces`;
-    }
-    
-    // Quality specifications for all age groups
-    const qualityDetails = "professional quality, printable quality, coloring book style";
-    
-    // Combine all parts of the prompt
-    let enhancedPrompt = `${ageSpecificPrompt}, ${qualityDetails}`;
-    
-    // Add model-specific enhancements
-    if (model === "runware:flux-dev@1") {
-      enhancedPrompt = `${enhancedPrompt}, professional line art illustration style`;
-    }
-    
-    return enhancedPrompt.trim();
-  }
-
   async generateImage(params: GenerateImageParams): Promise<GeneratedImage> {
     await this.connectionPromise;
 
@@ -181,22 +126,22 @@ export class RunwareService {
     }
 
     const taskUUID = crypto.randomUUID();
-    const enhancedPrompt = this.enhancePrompt(params.positivePrompt, params.ageGroup, params.model);
+    const enhancedPrompt = enhancePrompt(params.positivePrompt, params.ageGroup, params.model);
     
     return new Promise((resolve, reject) => {
       const message = [{
         taskType: "imageInference",
         taskUUID,
         positivePrompt: enhancedPrompt,
-        model: params.model || "runware:100@1",
-        width: params.width || 1024,
-        height: params.height || 1024,
-        numberResults: params.numberResults || 1,
-        outputFormat: params.outputFormat || "WEBP",
-        steps: 4,
-        CFGScale: params.CFGScale || 1,
-        scheduler: params.scheduler || "FlowMatchEulerDiscreteScheduler",
-        strength: params.strength || 0.8,
+        model: params.model || DEFAULT_MODEL,
+        width: params.width || DEFAULT_WIDTH,
+        height: params.height || DEFAULT_HEIGHT,
+        numberResults: params.numberResults || DEFAULT_NUMBER_RESULTS,
+        outputFormat: params.outputFormat || DEFAULT_OUTPUT_FORMAT,
+        steps: DEFAULT_STEPS,
+        CFGScale: params.CFGScale || DEFAULT_CFG_SCALE,
+        scheduler: params.scheduler || DEFAULT_SCHEDULER,
+        strength: params.strength || DEFAULT_STRENGTH,
         lora: params.lora || [],
       }];
 
@@ -214,5 +159,3 @@ export class RunwareService {
     });
   }
 }
-
-export const runwareService = new RunwareService();
