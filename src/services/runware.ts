@@ -131,31 +131,44 @@ export class RunwareService {
   }
 
   private enhancePrompt(prompt: string, ageGroup?: AgeGroup, model?: string): string {
-    const ageGroupPrompts = {
-      toddler: "extremely simple with very thick, bold outlines, large basic shapes, minimal details, perfect for toddlers",
-      preschool: "simple designs with clear thick outlines, basic recognizable shapes, limited details, easy for preschoolers to color",
-      school: "moderate detail with defined outlines, engaging elements but not too complex, perfect for elementary school children",
-      teen: "more intricate patterns with clear lines, interesting details and creative designs appealing to teenagers",
-      adult: "sophisticated designs with detailed patterns, intricate elements, and complex arrangements suitable for adults"
-    };
-
-    // Core coloring page requirements
-    const coreRequirements = "pure black and white line art for coloring books, crisp black lines on white background, high contrast";
+    // Core coloring page attributes that apply to all age groups
+    const coreAttributes = "black and white smooth and clean lineart, high contrast, crisp lines on white background, no grayscale, no shading, no color";
     
-    // Style specifics
-    const styleDetails = "no grayscale, no shading, no color, clear separations between elements, easily colorable spaces";
+    // Create specific prompt templates based on age group
+    let ageSpecificPrompt = "";
     
-    // Quality enhancements
-    const qualityDetails = "professional quality, clean lines, well-defined borders, printable quality";
-
-    // Build enhanced prompt
-    let enhancedPrompt = `${coreRequirements}, ${prompt}, ${ageGroup ? ageGroupPrompts[ageGroup] : ""}, ${styleDetails}, ${qualityDetails}`;
-
-    // Model-specific enhancements
-    if (model === "runware:flux-dev@1") {
-      enhancedPrompt = `${enhancedPrompt}, coloring book illustration style, professional line art`;
+    switch(ageGroup) {
+      case "toddler":
+        ageSpecificPrompt = `${coreAttributes} of ${prompt}, designed with extra-large, simple shapes and thick outlines, ensuring easy coloring for toddlers aged 1-3 years`;
+        break;
+      case "preschool":
+        ageSpecificPrompt = `${coreAttributes} of ${prompt}, featuring bold outlines, minimal intricate details, and engaging, recognizable elements, perfect for preschoolers aged 3-5 years`;
+        break;
+      case "school":
+        ageSpecificPrompt = `${coreAttributes} of ${prompt}, with moderate details, clear and fun designs, and interactive elements, ideal for kids aged 6-12 years to enjoy coloring`;
+        break;
+      case "teen":
+        ageSpecificPrompt = `${coreAttributes} of ${prompt}, featuring intricate patterns, detailed backgrounds, and stylish elements, catering to the artistic preferences of teens aged 13-17 years`;
+        break;
+      case "adult":
+        ageSpecificPrompt = `${coreAttributes} of ${prompt}, designed with high-detail elements, intricate patterns, and artistic compositions, providing a relaxing and immersive coloring experience for adults aged 18+`;
+        break;
+      default:
+        // If no age group is selected, use a general template
+        ageSpecificPrompt = `${coreAttributes} of ${prompt}, with well-defined borders and easily colorable spaces`;
     }
-
+    
+    // Quality specifications for all age groups
+    const qualityDetails = "professional quality, printable quality, coloring book style";
+    
+    // Combine all parts of the prompt
+    let enhancedPrompt = `${ageSpecificPrompt}, ${qualityDetails}`;
+    
+    // Add model-specific enhancements
+    if (model === "runware:flux-dev@1") {
+      enhancedPrompt = `${enhancedPrompt}, professional line art illustration style`;
+    }
+    
     return enhancedPrompt.trim();
   }
 
