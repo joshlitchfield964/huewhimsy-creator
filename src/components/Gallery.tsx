@@ -1,5 +1,6 @@
+
 import { useState, useEffect } from "react";
-import { ChevronDown, Loader2, Search } from "lucide-react";
+import { ChevronDown, Loader2 } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,7 +23,6 @@ export const Gallery = () => {
   const [selectedCategories, setSelectedCategories] = useState<ColoringPageCategory[]>([]);
   const [categories, setCategories] = useState<ColoringPageCategory[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   useEffect(() => {
     fetchColoringPages();
@@ -69,6 +69,7 @@ export const Gallery = () => {
   const applyFilters = (pagesToFilter: ColoringPage[]) => {
     let result = [...pagesToFilter];
     
+    // Only filter by categories if there are selected categories
     if (selectedCategories.length > 0) {
       result = result.filter(page => 
         selectedCategories.includes(identifyCategory(page.prompt))
@@ -115,10 +116,6 @@ export const Gallery = () => {
       console.error("Error liking coloring page:", error);
       toast.error("Failed to like coloring page");
     }
-  };
-
-  const toggleSidebar = () => {
-    setSidebarCollapsed(!sidebarCollapsed);
   };
 
   const renderContent = () => {
@@ -188,11 +185,9 @@ export const Gallery = () => {
               onCategoryChange={handleCategoryFilters}
               searchQuery={searchQuery}
               onSearchChange={handleSearch}
-              isCollapsed={sidebarCollapsed}
-              onToggleCollapse={toggleSidebar}
             />
             
-            <div className={`transition-all duration-300 ease-in-out flex-1 ${sidebarCollapsed ? "ml-12" : "ml-64"}`}>
+            <div className="flex-1">
               <div className="px-6 py-4">
                 <div className="flex justify-end mb-6">
                   <DropdownMenu>
