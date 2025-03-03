@@ -7,12 +7,28 @@ import {
   Trash2, 
   Eye, 
   EyeOff, 
-  Calendar 
+  Calendar,
+  Copy
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import { ColoringPage } from "@/services/coloringPageService";
 import { downloadAsPng, downloadAsPdf, printImage } from "@/utils/downloadUtils";
+import { toast } from "sonner";
+
+// Type definition for the categories we'll identify
+export type ColoringPageCategory = 
+  | "Animal" 
+  | "Bird" 
+  | "Mandala" 
+  | "Christmas" 
+  | "Halloween" 
+  | "Superhero" 
+  | "Fantasy" 
+  | "Space" 
+  | "Ocean" 
+  | "Nature"
+  | "Other";
 
 interface ColoringPageCardProps {
   page: ColoringPage;
@@ -21,6 +37,45 @@ interface ColoringPageCardProps {
   onDeleteClick?: (page: ColoringPage) => void;
   onToggleVisibility?: (page: ColoringPage) => void;
 }
+
+// Function to identify the category of a coloring page based on its prompt
+export const identifyCategory = (prompt: string): ColoringPageCategory => {
+  const lowercasePrompt = prompt.toLowerCase();
+  
+  // Category identification logic
+  if (/cat|dog|lion|tiger|elephant|bear|wolf|fox|rabbit|bunny|animal|pet|zoo/.test(lowercasePrompt)) {
+    return "Animal";
+  }
+  if (/bird|eagle|parrot|owl|flamingo|peacock|feather|flying|wings/.test(lowercasePrompt)) {
+    return "Bird";
+  }
+  if (/mandala|pattern|geometric|symmetrical|kaleidoscope|circular/.test(lowercasePrompt)) {
+    return "Mandala";
+  }
+  if (/christmas|santa|reindeer|snow|winter|gift|present|holiday|december|xmas/.test(lowercasePrompt)) {
+    return "Christmas";
+  }
+  if (/halloween|spooky|ghost|witch|pumpkin|skeleton|bat|haunted|scary/.test(lowercasePrompt)) {
+    return "Halloween";
+  }
+  if (/superhero|hero|cape|super|power|marvel|dc|avenger|batman|superman|spiderman/.test(lowercasePrompt)) {
+    return "Superhero";
+  }
+  if (/dragon|unicorn|fairy|magic|wizard|spell|enchanted|fantasy|magical/.test(lowercasePrompt)) {
+    return "Fantasy";
+  }
+  if (/space|planet|star|galaxy|astronaut|rocket|alien|cosmos|universe/.test(lowercasePrompt)) {
+    return "Space";
+  }
+  if (/ocean|sea|fish|mermaid|underwater|beach|wave|coral|reef|dolphin|whale/.test(lowercasePrompt)) {
+    return "Ocean";
+  }
+  if (/flower|tree|plant|garden|forest|park|nature|landscape|mountain/.test(lowercasePrompt)) {
+    return "Nature";
+  }
+  
+  return "Other";
+};
 
 export const ColoringPageCard = ({
   page,
@@ -37,8 +92,28 @@ export const ColoringPageCard = ({
     }
   };
 
+  // Function to handle copying the prompt to clipboard
+  const handleCopyPrompt = () => {
+    navigator.clipboard.writeText(page.prompt)
+      .then(() => {
+        toast.success("Prompt copied to clipboard!");
+      })
+      .catch((error) => {
+        console.error("Error copying prompt:", error);
+        toast.error("Failed to copy prompt");
+      });
+  };
+
+  // Identify the category of the coloring page
+  const category = identifyCategory(page.prompt);
+
   return (
     <div key={page.id} className="group relative bg-secondary rounded-xl overflow-hidden">
+      <div className="absolute top-2 left-2 z-10">
+        <span className="px-2 py-1 text-xs font-medium bg-black/60 text-white rounded-full">
+          {category}
+        </span>
+      </div>
       <img
         src={page.imageUrl}
         alt={page.prompt}
@@ -78,6 +153,15 @@ export const ColoringPageCard = ({
           className="h-10 w-10"
         >
           <Printer className="h-5 w-5" />
+        </Button>
+        <Button
+          variant="secondary"
+          size="icon"
+          onClick={handleCopyPrompt}
+          className="h-10 w-10"
+          title="Copy prompt"
+        >
+          <Copy className="h-5 w-5" />
         </Button>
         {isUserPage && onDeleteClick && (
           <Button

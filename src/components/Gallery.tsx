@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from "react";
-import { ChevronDown, Loader2 } from "lucide-react";
+import { ChevronDown, Loader2, Filter } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,14 +10,17 @@ import {
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { coloringPageService, type ColoringPage } from "@/services/coloringPageService";
-import { ColoringPageCard } from "./ColoringPageCard";
+import { ColoringPageCard, identifyCategory, type ColoringPageCategory } from "./ColoringPageCard";
 
 type SortOption = "likes" | "newest";
 
 export const Gallery = () => {
   const [sortBy, setSortBy] = useState<SortOption>("newest");
   const [pages, setPages] = useState<ColoringPage[]>([]);
+  const [filteredPages, setFilteredPages] = useState<ColoringPage[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [categoryFilter, setCategoryFilter] = useState<ColoringPageCategory | null>(null);
+  const [categories, setCategories] = useState<ColoringPageCategory[]>([]);
 
   useEffect(() => {
     fetchColoringPages();
@@ -28,7 +31,21 @@ export const Gallery = () => {
     try {
       const coloringPages = await coloringPageService.getPublicColoringPages();
       setPages(coloringPages);
+      setFilteredPages(coloringPages);
       sortPages(coloringPages, sortBy);
+      
+      // Extract and count all categories from the pages
+      const categoryMap = new Map<ColoringPageCategory, number>();
+      coloringPages.forEach(page => {
+        const category = identifyCategory(page.prompt);
+        categoryMap.set(category, (categoryMap.get(category) || 0) + 1);
+      });
+      
+      // Convert map keys to array and sort by count
+      const sortedCategories = Array.from(categoryMap.keys())
+        .sort((a, b) => (categoryMap.get(b) || 0) - (categoryMap.get(a) || 0));
+      
+      setCategories(sortedCategories);
     } catch (error) {
       console.error("Error fetching coloring pages:", error);
       toast.error("Failed to load coloring pages");
@@ -45,22 +62,44 @@ export const Gallery = () => {
       return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
     });
     setPages(sortedPages);
+    
+    // Apply category filter to sorted pages
+    if (categoryFilter) {
+      filterPagesByCategory(sortedPages, categoryFilter);
+    } else {
+      setFilteredPages(sortedPages);
+    }
+  };
+
+  const filterPagesByCategory = (pagesToFilter: ColoringPage[], category: ColoringPageCategory | null) => {
+    if (!category) {
+      setFilteredPages(pagesToFilter);
+      return;
+    }
+    
+    const filtered = pagesToFilter.filter(page => identifyCategory(page.prompt) === category);
+    setFilteredPages(filtered);
   };
 
   const handleSort = (option: SortOption) => {
     setSortBy(option);
     sortPages(pages, option);
   };
+  
+  const handleCategoryFilter = (category: ColoringPageCategory | null) => {
+    setCategoryFilter(category);
+    filterPagesByCategory(pages, category);
+  };
 
   const handleLike = async (id: string) => {
     try {
       const success = await coloringPageService.likeColoringPage(id);
       if (success) {
-        setPages(
-          pages.map((page) =>
-            page.id === id ? { ...page, likes: page.likes + 1 } : page
-          )
+        const updatedPages = pages.map((page) =>
+          page.id === id ? { ...page, likes: page.likes + 1 } : page
         );
+        setPages(updatedPages);
+        filterPagesByCategory(updatedPages, categoryFilter);
         toast.success("Added to favorites!");
       }
     } catch (error) {
@@ -79,18 +118,26 @@ export const Gallery = () => {
       );
     }
 
-    if (pages.length === 0) {
+    if (filteredPages.length === 0) {
       return (
         <div className="text-center py-20">
-          <p className="text-gray-500 text-lg">No coloring pages found in the gallery yet.</p>
-          <p className="text-gray-400">Be the first to create and share one!</p>
+          <p className="text-gray-500 text-lg">
+            {categoryFilter 
+              ? `No coloring pages found in the "${categoryFilter}" category.` 
+              : "No coloring pages found in the gallery yet."}
+          </p>
+          <p className="text-gray-400">
+            {categoryFilter 
+              ? "Try selecting a different category or create your own!" 
+              : "Be the first to create and share one!"}
+          </p>
         </div>
       );
     }
 
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {pages.map((page) => (
+        {filteredPages.map((page) => (
           <ColoringPageCard 
             key={page.id}
             page={page}
@@ -115,7 +162,29 @@ export const Gallery = () => {
             </p>
           </div>
 
-          <div className="flex justify-end mb-8">
+          <div className="flex flex-col sm:flex-row sm:justify-between items-center gap-4 mb-8">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="gap-2">
+                  <Filter className="h-4 w-4" />
+                  Category: {categoryFilter || "All"}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem onClick={() => handleCategoryFilter(null)}>
+                  All Categories
+                </DropdownMenuItem>
+                {categories.map((category) => (
+                  <DropdownMenuItem 
+                    key={category} 
+                    onClick={() => handleCategoryFilter(category)}
+                  >
+                    {category}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+            
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" className="gap-2">
