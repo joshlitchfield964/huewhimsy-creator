@@ -7,9 +7,7 @@ export default function Gallery() {
   return (
     <div className="min-h-screen">
       <Header />
-      <div className="pt-16">
-        <GalleryComponent />
-      </div>
+      <GalleryComponent />
       <Footer />
     </div>
   );
