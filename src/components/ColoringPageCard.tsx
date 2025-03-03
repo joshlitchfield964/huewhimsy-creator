@@ -108,106 +108,118 @@ export const ColoringPageCard = ({
   const category = identifyCategory(page.prompt);
 
   return (
-    <div key={page.id} className="group relative bg-secondary rounded-xl overflow-hidden">
-      <div className="absolute top-2 left-2 z-10">
-        <span className="px-2 py-1 text-xs font-medium bg-black/60 text-white rounded-full">
-          {category}
-        </span>
-      </div>
-      <img
-        src={page.imageUrl}
-        alt={page.prompt}
-        className="w-full aspect-square object-cover"
-      />
-      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4">
-        {!isUserPage && onLike && (
-          <Button
-            variant="secondary"
-            size="icon"
-            onClick={() => onLike(page.id)}
-            className="h-10 w-10"
-          >
-            <Heart className="h-5 w-5" />
-          </Button>
-        )}
-        <Button
-          variant="secondary"
-          size="icon"
-          onClick={() => downloadAsPng(page.imageUrl, page.id)}
-          className="h-10 w-10"
-        >
-          <Download className="h-5 w-5" />
-        </Button>
-        <Button
-          variant="secondary"
-          size="icon"
-          onClick={() => downloadAsPdf(page)}
-          className="h-10 w-10"
-        >
-          <FileDown className="h-5 w-5" />
-        </Button>
-        <Button
-          variant="secondary"
-          size="icon"
-          onClick={() => printImage(page.imageUrl)}
-          className="h-10 w-10"
-        >
-          <Printer className="h-5 w-5" />
-        </Button>
-        <Button
-          variant="secondary"
-          size="icon"
-          onClick={handleCopyPrompt}
-          className="h-10 w-10"
-          title="Copy prompt"
-        >
-          <Copy className="h-5 w-5" />
-        </Button>
-        {isUserPage && onDeleteClick && (
-          <Button
-            variant="destructive"
-            size="icon"
-            onClick={() => onDeleteClick(page)}
-            className="h-10 w-10"
-          >
-            <Trash2 className="h-5 w-5" />
-          </Button>
-        )}
+    <div className="bg-white rounded-xl overflow-hidden shadow-md transition-transform hover:shadow-lg">
+      <div className="relative">
+        <div className="absolute top-2 left-2 z-10">
+          <span className="px-2 py-1 text-xs font-medium bg-black/60 text-white rounded-full">
+            {category}
+          </span>
+        </div>
+        <img
+          src={page.imageUrl}
+          alt={page.prompt}
+          className="w-full aspect-square object-cover"
+        />
       </div>
       <div className="p-4">
-        <p className="text-sm text-gray-600 truncate">{page.prompt}</p>
-        <div className="flex items-center justify-between mt-2">
-          {!isUserPage ? (
-            <div className="flex items-center gap-2">
-              <Heart className="h-4 w-4 text-pink-500" />
-              <span className="text-sm">{page.likes}</span>
-            </div>
-          ) : (
-            <div className="flex items-center gap-2">
-              <Calendar className="h-4 w-4 text-gray-400" />
-              <span className="text-xs text-gray-400">{formatDate(page.createdAt)}</span>
-            </div>
-          )}
-          {isUserPage && onToggleVisibility ? (
-            <div className="flex items-center">
-              <button 
-                onClick={() => onToggleVisibility(page)}
-                className="text-xs flex items-center gap-1 text-gray-500 hover:text-gray-700"
+        <p className="text-sm text-gray-600 mb-3 line-clamp-2 h-10">{page.prompt}</p>
+        
+        <div className="flex flex-col gap-3">
+          {/* Action buttons now displayed in footer instead of on hover */}
+          <div className="flex flex-wrap gap-2 justify-center">
+            {!isUserPage && onLike && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => onLike(page.id)}
+                className="h-8 w-8 p-0"
+                title="Like"
               >
-                {page.isPublic ? (
-                  <>
-                    <Eye className="h-3 w-3" /> Public
-                  </>
-                ) : (
-                  <>
-                    <EyeOff className="h-3 w-3" /> Private
-                  </>
-                )}
-              </button>
-            </div>
-          ) : (
-            <span className="text-xs text-gray-400">{formatDate(page.createdAt)}</span>
-          )}
+                <Heart className="h-4 w-4 text-pink-500" />
+              </Button>
+            )}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => downloadAsPng(page.imageUrl, page.id)}
+              className="h-8 w-8 p-0"
+              title="Download PNG"
+            >
+              <Download className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => downloadAsPdf(page)}
+              className="h-8 w-8 p-0"
+              title="Download PDF"
+            >
+              <FileDown className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => printImage(page.imageUrl)}
+              className="h-8 w-8 p-0"
+              title="Print"
+            >
+              <Printer className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleCopyPrompt}
+              className="h-8 w-8 p-0"
+              title="Copy prompt"
+            >
+              <Copy className="h-4 w-4" />
+            </Button>
+            {isUserPage && onDeleteClick && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => onDeleteClick(page)}
+                className="h-8 w-8 p-0 border-red-200 hover:bg-red-50 hover:text-red-600"
+                title="Delete"
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            )}
+          </div>
+
+          <div className="flex items-center justify-between pt-2 border-t border-gray-100 mt-1">
+            {!isUserPage ? (
+              <div className="flex items-center gap-2">
+                <Heart className="h-4 w-4 text-pink-500" fill="#ec4899" />
+                <span className="text-sm">{page.likes}</span>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2">
+                <Calendar className="h-4 w-4 text-gray-400" />
+                <span className="text-xs text-gray-400">{formatDate(page.createdAt)}</span>
+              </div>
+            )}
+            {isUserPage && onToggleVisibility ? (
+              <div className="flex items-center">
+                <button 
+                  onClick={() => onToggleVisibility(page)}
+                  className="text-xs flex items-center gap-1 text-gray-500 hover:text-gray-700"
+                >
+                  {page.isPublic ? (
+                    <>
+                      <Eye className="h-3 w-3" /> Public
+                    </>
+                  ) : (
+                    <>
+                      <EyeOff className="h-3 w-3" /> Private
+                    </>
+                  )}
+                </button>
+              </div>
+            ) : (
+              <span className="text-xs text-gray-400">{formatDate(page.createdAt)}</span>
+            )}
+          </div>
         </div>
       </div>
     </div>

@@ -5,9 +5,11 @@ import { Gallery as GalleryComponent } from "@/components/Gallery";
 
 export default function Gallery() {
   return (
-    <div className="min-h-screen">
+    <div className="flex flex-col min-h-screen bg-purple-50/50">
       <Header />
-      <GalleryComponent />
+      <main className="flex-1">
+        <GalleryComponent />
+      </main>
       <Footer />
     </div>
   );

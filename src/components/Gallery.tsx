@@ -1,6 +1,5 @@
-
 import { useState, useEffect } from "react";
-import { ChevronDown, Loader2, Filter, Search, Sparkles, Palette, Rainbow } from "lucide-react";
+import { ChevronDown, Loader2, Search } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,7 +7,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { coloringPageService, type ColoringPage } from "@/services/coloringPageService";
 import { ColoringPageCard, identifyCategory, type ColoringPageCategory } from "./ColoringPageCard";
@@ -38,14 +36,12 @@ export const Gallery = () => {
       setFilteredPages(coloringPages);
       sortPages(coloringPages, sortBy);
       
-      // Extract and count all categories from the pages
       const categoryMap = new Map<ColoringPageCategory, number>();
       coloringPages.forEach(page => {
         const category = identifyCategory(page.prompt);
         categoryMap.set(category, (categoryMap.get(category) || 0) + 1);
       });
       
-      // Convert map keys to array and sort by count
       const sortedCategories = Array.from(categoryMap.keys())
         .sort((a, b) => (categoryMap.get(b) || 0) - (categoryMap.get(a) || 0));
       
@@ -67,21 +63,18 @@ export const Gallery = () => {
     });
     setPages(sortedPages);
     
-    // Apply filters to sorted pages
     applyFilters(sortedPages);
   };
 
   const applyFilters = (pagesToFilter: ColoringPage[]) => {
     let result = [...pagesToFilter];
     
-    // Apply category filters
     if (selectedCategories.length > 0) {
       result = result.filter(page => 
         selectedCategories.includes(identifyCategory(page.prompt))
       );
     }
     
-    // Apply search query filter
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase().trim();
       result = result.filter(page => 
@@ -156,7 +149,7 @@ export const Gallery = () => {
     }
 
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 animate-fade-up">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 animate-fade-up">
         {filteredPages.map((page) => (
           <ColoringPageCard 
             key={page.id}
@@ -170,32 +163,25 @@ export const Gallery = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-purple-50">
-      <div className="relative py-16">
-        {/* Decorative elements */}
+      <div className="relative py-12">
         <div className="absolute top-10 left-10 w-24 h-24 bg-yellow-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-pulse"></div>
         <div className="absolute top-20 right-20 w-32 h-32 bg-purple-200 rounded-full mix-blend-multiply filter blur-xl opacity-40 animate-pulse"></div>
         <div className="absolute bottom-0 left-1/3 w-40 h-40 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-pulse"></div>
         
         <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-6xl mx-auto space-y-4 mb-8">
+          <div className="max-w-6xl mx-auto space-y-4 mb-12">
             <div className="text-center space-y-4">
-              <div className="inline-flex items-center gap-3 mb-2">
-                <Palette className="h-8 w-8 text-purple-500" />
-                <Rainbow className="h-8 w-8 text-purple-500" />
-                <Sparkles className="h-8 w-8 text-purple-500" />
-              </div>
-              <h2 className="font-sans text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-600 via-pink-500 to-purple-500">
+              <h2 className="font-sans text-4xl sm:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-600 via-pink-500 to-purple-500">
                 Community Gallery
               </h2>
               <p className="text-gray-600 text-lg max-w-xl mx-auto">
-                Discover and download coloring pages created by our creative community!
+                Discover and download coloring pages created by our creative community.
                 Find inspiration or share your own masterpieces.
               </p>
             </div>
           </div>
           
-          <div className="flex relative">
-            {/* Sidebar */}
+          <div className="flex relative bg-white rounded-xl shadow-md overflow-hidden">
             <GallerySidebar 
               categories={categories}
               selectedCategories={selectedCategories}
@@ -206,8 +192,7 @@ export const Gallery = () => {
               onToggleCollapse={toggleSidebar}
             />
             
-            {/* Main Content */}
-            <div className={`transition-all duration-300 ease-in-out ${sidebarCollapsed ? "ml-12 w-[calc(100%-3rem)]" : "ml-64 w-[calc(100%-16rem)]"}`}>
+            <div className={`transition-all duration-300 ease-in-out flex-1 ${sidebarCollapsed ? "ml-12" : "ml-64"}`}>
               <div className="px-6 py-4">
                 <div className="flex justify-end mb-6">
                   <DropdownMenu>
