@@ -1,7 +1,6 @@
-
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Sparkles, Copy } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { useState } from "react";
 import { ColoringPageCategory } from "@/components/ColoringPageCard";
@@ -96,43 +95,12 @@ interface PromptInputProps {
 }
 
 export const PromptInput = ({ prompt, setPrompt }: PromptInputProps) => {
-  const [selectedCategory, setSelectedCategory] = useState<ColoringPageCategory | null>(null);
-
   const getRandomPrompt = () => {
-    let promptsToChooseFrom = randomPrompts;
-    
-    if (selectedCategory) {
-      promptsToChooseFrom = categoryPrompts[selectedCategory];
-    }
-    
-    const randomPrompt = promptsToChooseFrom[Math.floor(Math.random() * promptsToChooseFrom.length)];
+    const randomPrompt = randomPrompts[Math.floor(Math.random() * randomPrompts.length)];
     setPrompt(randomPrompt);
     toast.success("Random prompt inserted!", {
       description: randomPrompt,
     });
-  };
-
-  const handleCategorySelect = (category: ColoringPageCategory) => {
-    setSelectedCategory(category);
-    const promptsForCategory = categoryPrompts[category];
-    const randomPrompt = promptsForCategory[Math.floor(Math.random() * promptsForCategory.length)];
-    setPrompt(randomPrompt);
-    toast.success(`${category} prompt inserted!`, {
-      description: randomPrompt,
-    });
-  };
-
-  const handlePasteFromClipboard = async () => {
-    try {
-      const clipboardText = await navigator.clipboard.readText();
-      if (clipboardText) {
-        setPrompt(clipboardText);
-        toast.success("Prompt pasted from clipboard!");
-      }
-    } catch (error) {
-      console.error("Failed to read clipboard:", error);
-      toast.error("Could not access clipboard");
-    }
   };
 
   return (
@@ -146,7 +114,7 @@ export const PromptInput = ({ prompt, setPrompt }: PromptInputProps) => {
         onChange={(e) => setPrompt(e.target.value)}
         className="min-h-[120px] bg-white"
       />
-      <div className="grid grid-cols-2 gap-2">
+      <div>
         <Button
           variant="ghost"
           size="sm"
@@ -156,34 +124,6 @@ export const PromptInput = ({ prompt, setPrompt }: PromptInputProps) => {
           <Sparkles className="w-4 h-4 text-yellow-500" />
           Random Prompt
         </Button>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="group text-sm gap-2 w-full border"
-          onClick={handlePasteFromClipboard}
-        >
-          <Copy className="w-4 h-4 text-blue-500" />
-          Paste from Clipboard
-        </Button>
-      </div>
-      
-      <div className="mt-4">
-        <p className="text-sm font-medium text-gray-700 mb-2">
-          Select a category for prompts:
-        </p>
-        <div className="flex flex-wrap gap-2">
-          {Object.keys(categoryPrompts).map((category) => (
-            <Button
-              key={category}
-              variant="outline"
-              size="sm"
-              className={selectedCategory === category ? "bg-primary text-white" : ""}
-              onClick={() => handleCategorySelect(category as ColoringPageCategory)}
-            >
-              {category}
-            </Button>
-          ))}
-        </div>
       </div>
     </div>
   );

@@ -119,91 +119,92 @@ export const ColoringPageCard = ({
           src={page.imageUrl}
           alt={page.prompt}
           className="w-full aspect-square object-cover"
+          loading="lazy"
         />
       </div>
-      <div className="p-4">
-        <p className="text-sm text-gray-600 mb-3 line-clamp-2 h-10">{page.prompt}</p>
+      <div className="p-3 md:p-4">
+        <p className="text-xs md:text-sm text-gray-600 mb-3 line-clamp-2 h-8 md:h-10">{page.prompt}</p>
         
-        <div className="flex flex-col gap-3">
-          {/* Action buttons now displayed in footer instead of on hover */}
-          <div className="flex flex-wrap gap-2 justify-center">
+        <div className="flex flex-col gap-2 md:gap-3">
+          {/* Action buttons in a more compact layout for mobile */}
+          <div className="flex flex-wrap gap-1 md:gap-2 justify-center">
             {!isUserPage && onLike && (
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => onLike(page.id)}
-                className="h-8 w-8 p-0"
+                className="h-7 md:h-8 w-7 md:w-8 p-0"
                 title="Like"
               >
-                <Heart className="h-4 w-4 text-pink-500" />
+                <Heart className="h-3 md:h-4 w-3 md:w-4 text-pink-500" />
               </Button>
             )}
             <Button
               variant="outline"
               size="sm"
               onClick={() => downloadAsPng(page.imageUrl, page.id)}
-              className="h-8 w-8 p-0"
+              className="h-7 md:h-8 w-7 md:w-8 p-0"
               title="Download PNG"
             >
-              <Download className="h-4 w-4" />
+              <Download className="h-3 md:h-4 w-3 md:w-4" />
             </Button>
             <Button
               variant="outline"
               size="sm"
               onClick={() => downloadAsPdf(page)}
-              className="h-8 w-8 p-0"
+              className="h-7 md:h-8 w-7 md:w-8 p-0"
               title="Download PDF"
             >
-              <FileDown className="h-4 w-4" />
+              <FileDown className="h-3 md:h-4 w-3 md:w-4" />
             </Button>
             <Button
               variant="outline"
               size="sm"
               onClick={() => printImage(page.imageUrl)}
-              className="h-8 w-8 p-0"
+              className="h-7 md:h-8 w-7 md:w-8 p-0"
               title="Print"
             >
-              <Printer className="h-4 w-4" />
+              <Printer className="h-3 md:h-4 w-3 md:w-4" />
             </Button>
             <Button
               variant="outline"
               size="sm"
               onClick={handleCopyPrompt}
-              className="h-8 w-8 p-0"
+              className="h-7 md:h-8 w-7 md:w-8 p-0"
               title="Copy prompt"
             >
-              <Copy className="h-4 w-4" />
+              <Copy className="h-3 md:h-4 w-3 md:w-4" />
             </Button>
             {isUserPage && onDeleteClick && (
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => onDeleteClick(page)}
-                className="h-8 w-8 p-0 border-red-200 hover:bg-red-50 hover:text-red-600"
+                className="h-7 md:h-8 w-7 md:w-8 p-0 border-red-200 hover:bg-red-50 hover:text-red-600"
                 title="Delete"
               >
-                <Trash2 className="h-4 w-4" />
+                <Trash2 className="h-3 md:h-4 w-3 md:w-4" />
               </Button>
             )}
           </div>
 
           <div className="flex items-center justify-between pt-2 border-t border-gray-100 mt-1">
             {!isUserPage ? (
-              <div className="flex items-center gap-2">
-                <Heart className="h-4 w-4 text-pink-500" fill="#ec4899" />
-                <span className="text-sm">{page.likes}</span>
+              <div className="flex items-center gap-1 md:gap-2">
+                <Heart className="h-3 md:h-4 w-3 md:w-4 text-pink-500" fill="#ec4899" />
+                <span className="text-xs md:text-sm">{page.likes}</span>
               </div>
             ) : (
-              <div className="flex items-center gap-2">
-                <Calendar className="h-4 w-4 text-gray-400" />
-                <span className="text-xs text-gray-400">{formatDate(page.createdAt)}</span>
+              <div className="flex items-center gap-1 md:gap-2">
+                <Calendar className="h-3 md:h-4 w-3 md:w-4 text-gray-400" />
+                <span className="text-[10px] md:text-xs text-gray-400">{formatDate(page.createdAt)}</span>
               </div>
             )}
             {isUserPage && onToggleVisibility ? (
               <div className="flex items-center">
                 <button 
                   onClick={() => onToggleVisibility(page)}
-                  className="text-xs flex items-center gap-1 text-gray-500 hover:text-gray-700"
+                  className="text-[10px] md:text-xs flex items-center gap-1 text-gray-500 hover:text-gray-700"
                 >
                   {page.isPublic ? (
                     <>
@@ -217,7 +218,7 @@ export const ColoringPageCard = ({
                 </button>
               </div>
             ) : (
-              <span className="text-xs text-gray-400">{formatDate(page.createdAt)}</span>
+              <span className="text-[10px] md:text-xs text-gray-400">{formatDate(page.createdAt)}</span>
             )}
           </div>
         </div>

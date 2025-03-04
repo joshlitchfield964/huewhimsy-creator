@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { ChevronDown, Loader2 } from "lucide-react";
 import {
@@ -23,9 +22,20 @@ export const Gallery = () => {
   const [selectedCategories, setSelectedCategories] = useState<ColoringPageCategory[]>([]);
   const [categories, setCategories] = useState<ColoringPageCategory[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [showSidebar, setShowSidebar] = useState(false);
 
   useEffect(() => {
     fetchColoringPages();
+    
+    const handleResize = () => {
+      setShowSidebar(window.innerWidth >= 768);
+    };
+    
+    handleResize();
+    
+    window.addEventListener('resize', handleResize);
+    
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   const fetchColoringPages = async () => {
@@ -69,7 +79,6 @@ export const Gallery = () => {
   const applyFilters = (pagesToFilter: ColoringPage[]) => {
     let result = [...pagesToFilter];
     
-    // Only filter by categories if there are selected categories
     if (selectedCategories.length > 0) {
       result = result.filter(page => 
         selectedCategories.includes(identifyCategory(page.prompt))
@@ -158,54 +167,71 @@ export const Gallery = () => {
     );
   };
 
+  const toggleSidebar = () => {
+    setShowSidebar(!showSidebar);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-purple-50">
-      <div className="relative py-12">
+      <div className="relative py-8 md:py-12">
         <div className="absolute top-10 left-10 w-24 h-24 bg-yellow-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-pulse"></div>
         <div className="absolute top-20 right-20 w-32 h-32 bg-purple-200 rounded-full mix-blend-multiply filter blur-xl opacity-40 animate-pulse"></div>
         <div className="absolute bottom-0 left-1/3 w-40 h-40 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-pulse"></div>
         
         <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-6xl mx-auto space-y-4 mb-12">
+          <div className="max-w-6xl mx-auto space-y-4 mb-6 md:mb-12">
             <div className="text-center space-y-4">
-              <h2 className="font-sans text-4xl sm:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-600 via-pink-500 to-purple-500">
+              <h2 className="font-sans text-3xl sm:text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-600 via-pink-500 to-purple-500">
                 Community Gallery
               </h2>
-              <p className="text-gray-600 text-lg max-w-xl mx-auto">
+              <p className="text-gray-600 text-base md:text-lg max-w-xl mx-auto px-4">
                 Discover and download coloring pages created by our creative community.
                 Find inspiration or share your own masterpieces.
               </p>
             </div>
           </div>
           
-          <div className="flex relative bg-white rounded-xl shadow-md overflow-hidden">
-            <GallerySidebar 
-              categories={categories}
-              selectedCategories={selectedCategories}
-              onCategoryChange={handleCategoryFilters}
-              searchQuery={searchQuery}
-              onSearchChange={handleSearch}
-            />
+          <div className="flex flex-col md:flex-row relative bg-white rounded-xl shadow-md overflow-hidden">
+            <div className={`${showSidebar ? 'block' : 'hidden'} md:block w-full md:w-64 flex-shrink-0`}>
+              <GallerySidebar 
+                categories={categories}
+                selectedCategories={selectedCategories}
+                onCategoryChange={handleCategoryFilters}
+                searchQuery={searchQuery}
+                onSearchChange={handleSearch}
+              />
+            </div>
             
             <div className="flex-1">
-              <div className="px-6 py-4">
-                <div className="flex justify-end mb-6">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="outline" className="gap-2 border-purple-200 text-purple-700 hover:bg-purple-50">
-                        Sort by: {sortBy === "likes" ? "Most Liked" : "Newest"}
-                        <ChevronDown className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                      <DropdownMenuItem onClick={() => handleSort("newest")}>
-                        Newest
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => handleSort("likes")}>
-                        Most Liked
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+              <div className="px-4 md:px-6 py-4">
+                <div className="flex items-center justify-between mb-6">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={toggleSidebar}
+                    className="md:hidden block border-purple-200 text-purple-700"
+                  >
+                    {showSidebar ? 'Hide Filters' : 'Show Filters'}
+                  </Button>
+                  
+                  <div className="ml-auto">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="outline" className="gap-2 border-purple-200 text-purple-700 hover:bg-purple-50">
+                          Sort by: {sortBy === "likes" ? "Most Liked" : "Newest"}
+                          <ChevronDown className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent>
+                        <DropdownMenuItem onClick={() => handleSort("newest")}>
+                          Newest
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleSort("likes")}>
+                          Most Liked
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
                 </div>
                 
                 {renderContent()}

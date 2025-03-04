@@ -40,14 +40,14 @@ export const GallerySidebar = ({
   };
 
   return (
-    <div className="bg-gradient-to-bl from-purple-50 to-white border-r border-purple-100 h-full w-64">
-      <div className="p-4 flex justify-between items-center border-b border-purple-100">
+    <div className="bg-gradient-to-bl from-purple-50 to-white border-r border-purple-100 h-full">
+      <div className="p-3 md:p-4 flex justify-between items-center border-b border-purple-100">
         <h3 className="font-medium text-purple-800 flex items-center gap-2">
           <Filter className="h-4 w-4" /> Filters
         </h3>
       </div>
 
-      <div className="p-4 space-y-6 overflow-auto h-[calc(100%-60px)]">
+      <div className="p-3 md:p-4 space-y-5 overflow-auto max-h-[70vh] md:max-h-[calc(100vh-180px)]">
         {/* Search */}
         <div className="space-y-2">
           <label className="text-sm font-medium text-purple-800">Search</label>
