@@ -24,8 +24,10 @@ export const GallerySidebar = ({
 }: GallerySidebarProps) => {
   const toggleCategory = (category: ColoringPageCategory) => {
     if (selectedCategories.includes(category)) {
+      // If category is already selected, remove it
       onCategoryChange(selectedCategories.filter(c => c !== category));
     } else {
+      // If category is not selected, add it
       onCategoryChange([...selectedCategories, category]);
     }
   };

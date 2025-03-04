@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { ChevronDown, Loader2 } from "lucide-react";
 import {
@@ -22,7 +23,7 @@ export const Gallery = () => {
   const [selectedCategories, setSelectedCategories] = useState<ColoringPageCategory[]>([]);
   const [categories, setCategories] = useState<ColoringPageCategory[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [showSidebar, setShowSidebar] = useState(false);
+  const [showSidebar, setShowSidebar] = useState(true);
 
   useEffect(() => {
     fetchColoringPages();
@@ -37,6 +38,11 @@ export const Gallery = () => {
     
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+
+  useEffect(() => {
+    // Apply filters whenever selectedCategories or searchQuery changes
+    applyFilters(pages);
+  }, [selectedCategories, searchQuery]);
 
   const fetchColoringPages = async () => {
     setIsLoading(true);
@@ -79,12 +85,14 @@ export const Gallery = () => {
   const applyFilters = (pagesToFilter: ColoringPage[]) => {
     let result = [...pagesToFilter];
     
+    // Only filter by categories if there are selected categories
     if (selectedCategories.length > 0) {
       result = result.filter(page => 
         selectedCategories.includes(identifyCategory(page.prompt))
       );
     }
     
+    // Only filter by search if there is a search query
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase().trim();
       result = result.filter(page => 
@@ -92,12 +100,12 @@ export const Gallery = () => {
       );
     }
     
+    console.log("Filtered pages:", result.length, "Selected categories:", selectedCategories);
     setFilteredPages(result);
   };
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
-    applyFilters(pages);
   };
 
   const handleSort = (option: SortOption) => {
@@ -106,8 +114,8 @@ export const Gallery = () => {
   };
   
   const handleCategoryFilters = (categories: ColoringPageCategory[]) => {
+    console.log("Setting categories:", categories);
     setSelectedCategories(categories);
-    applyFilters(pages);
   };
 
   const handleLike = async (id: string) => {
@@ -167,10 +175,6 @@ export const Gallery = () => {
     );
   };
 
-  const toggleSidebar = () => {
-    setShowSidebar(!showSidebar);
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-purple-50">
       <div className="relative py-8 md:py-12">
@@ -204,17 +208,8 @@ export const Gallery = () => {
             
             <div className="flex-1">
               <div className="px-4 md:px-6 py-4">
-                <div className="flex items-center justify-between mb-6">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={toggleSidebar}
-                    className="md:hidden block border-purple-200 text-purple-700"
-                  >
-                    {showSidebar ? 'Hide Filters' : 'Show Filters'}
-                  </Button>
-                  
-                  <div className="ml-auto">
+                <div className="flex items-center justify-end mb-6">                  
+                  <div>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button variant="outline" className="gap-2 border-purple-200 text-purple-700 hover:bg-purple-50">
