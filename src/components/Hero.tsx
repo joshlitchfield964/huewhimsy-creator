@@ -38,9 +38,7 @@ export const Hero = () => {
         <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
           <div className="text-left max-w-2xl space-y-8 animate-fade-down">
             <h1 className="font-sans text-5xl md:text-7xl font-bold leading-tight">
-              Transform <span className="text-pink-500">Words</span> into Beautiful{" "}
-              <span className="text-purple-500">Coloring</span>{" "}
-              <span className="text-blue-500">Pages</span>
+              AI <span className="text-pink-500">Coloring Page</span> Generator: Turn <span className="text-purple-500">Imagination</span> Into <span className="text-blue-500">Art</span>
             </h1>
             <p className="text-lg md:text-xl text-gray-600">
               Create <span className="text-orange-500 font-semibold">unique</span> coloring pages from your{" "}
