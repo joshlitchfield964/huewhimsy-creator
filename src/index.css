@@ -2,6 +2,7 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -99,15 +100,15 @@
   }
   
   h1 {
-    @apply text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-500 font-bold tracking-wide;
+    @apply text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-500 font-bold tracking-tight;
   }
   
   h2 {
-    @apply text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-500 font-bold tracking-wide;
+    @apply text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-500 font-bold tracking-tight;
   }
   
   h3 {
-    @apply text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-orange-400 font-bold tracking-wide;
+    @apply text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-orange-400 font-bold tracking-tight;
   }
 }
 
@@ -121,7 +122,7 @@
   }
 }
 
-/* Greycliff CF font */
+/* Greycliff CF font - keeping for compatibility, but using Montserrat as the primary heading font */
 @font-face {
   font-family: 'Greycliff CF';
   src: url('/fonts/GreycliffCF-Bold.woff2') format('woff2'),

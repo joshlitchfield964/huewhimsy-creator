@@ -22,7 +22,7 @@ export default {
       fontFamily: {
         sans: ["Inter", "sans-serif"],
         display: ["Playfair Display", "serif"],
-        heading: ["Greycliff CF", "system-ui", "sans-serif"],
+        heading: ["Montserrat", "system-ui", "sans-serif"],
       },
       colors: {
         border: "hsl(var(--border))",
