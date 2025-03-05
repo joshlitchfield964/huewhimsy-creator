@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -21,7 +22,7 @@ export default {
       fontFamily: {
         sans: ["Inter", "sans-serif"],
         display: ["Playfair Display", "serif"],
-        heading: ["Comfortaa", "cursive"],
+        heading: ["Greycliff CF", "system-ui", "sans-serif"],
       },
       colors: {
         border: "hsl(var(--border))",
