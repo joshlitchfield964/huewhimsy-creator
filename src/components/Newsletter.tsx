@@ -21,7 +21,7 @@ export const Newsletter = () => {
     <div className="py-20 bg-secondary">
       <div className="container mx-auto px-4">
         <div className="max-w-2xl mx-auto text-center space-y-8 animate-fade-up">
-          <h2 className="font-sans text-4xl font-bold">
+          <h2 className="text-4xl font-bold">
             Get Weekly{" "}
             <span className="text-purple-500">Inspiration</span>
           </h2>
@@ -47,4 +47,4 @@ export const Newsletter = () => {
       </div>
     </div>
   );
-};
+}
