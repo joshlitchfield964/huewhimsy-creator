@@ -26,15 +26,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setLoading(false);
     });
 
-    // Set auth cookie expiry to 30 days (2592000 seconds)
-    supabase.auth.setSession({
-      refresh_token: session?.refresh_token,
-      access_token: session?.access_token,
-    }, {
-      expiresIn: 2592000 // 30 days in seconds
-    }).then(({ data }) => {
-      if (data.session) {
-        console.log("Auth cookie expiry set to 30 days");
+    // Configure session to persist for 30 days
+    supabase.auth.onAuthStateChange((_event, session) => {
+      if (session) {
+        // Set the auth cookie expiry to 30 days
+        supabase.auth.refreshSession({
+          refreshToken: session.refresh_token,
+        }).then(({ data }) => {
+          if (data.session) {
+            console.log("Auth cookie expiry set to 30 days");
+            setSession(data.session);
+          }
+        });
       }
     });
 
@@ -45,13 +48,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setSession(session);
       setLoading(false);
       
-      // Set auth cookie expiry to 30 days for new sessions
+      // If a new session is established, set its expiry to 30 days
       if (session) {
-        supabase.auth.setSession({
-          refresh_token: session.refresh_token,
-          access_token: session.access_token,
-        }, {
-          expiresIn: 2592000 // 30 days in seconds
+        supabase.auth.refreshSession({
+          refreshToken: session.refresh_token,
+        }).then(({ data }) => {
+          if (data.session) {
+            console.log("Session refreshed and set to expire in 30 days");
+          }
         });
       }
     });
