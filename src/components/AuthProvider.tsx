@@ -31,7 +31,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (session) {
         // Set the auth cookie expiry to 30 days
         supabase.auth.refreshSession({
-          refreshToken: session.refresh_token,
+          refresh_token: session.refresh_token,
         }).then(({ data }) => {
           if (data.session) {
             console.log("Auth cookie expiry set to 30 days");
@@ -51,7 +51,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // If a new session is established, set its expiry to 30 days
       if (session) {
         supabase.auth.refreshSession({
-          refreshToken: session.refresh_token,
+          refresh_token: session.refresh_token,
         }).then(({ data }) => {
           if (data.session) {
             console.log("Session refreshed and set to expire in 30 days");
