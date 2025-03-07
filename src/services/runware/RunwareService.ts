@@ -1,4 +1,3 @@
-
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { GenerateImageParams, GeneratedImage } from "./types";
@@ -138,8 +137,8 @@ export class RunwareService {
         height: params.height || DEFAULT_HEIGHT,
         numberResults: params.numberResults || DEFAULT_NUMBER_RESULTS,
         outputFormat: params.outputFormat || DEFAULT_OUTPUT_FORMAT,
-        steps: params.model === "rundiffusion:130@100" ? 8 : DEFAULT_STEPS, // More steps for Juggernaut Pro
-        CFGScale: params.model === "rundiffusion:130@100" ? 2 : (params.CFGScale || DEFAULT_CFG_SCALE), // Higher CFG for better guidance
+        steps: params.model === "rundiffusion:130@100" ? DEFAULT_STEPS : 8, // Use 25 steps for Juggernaut Pro
+        CFGScale: params.model === "rundiffusion:130@100" ? DEFAULT_CFG_SCALE : 2, // Use 3.5 CFG scale for Juggernaut Pro
         scheduler: params.scheduler || DEFAULT_SCHEDULER,
         strength: params.strength || DEFAULT_STRENGTH,
         lora: params.lora || [],

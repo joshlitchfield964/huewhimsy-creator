@@ -40,7 +40,7 @@ export function enhancePrompt(prompt: string, ageGroup?: AgeGroup, model?: strin
   
   // Add model-specific enhancements
   if (model === "rundiffusion:130@100") {
-    enhancedPrompt = `${enhancedPrompt}, professional line art illustration with strong defined outlines, coloring book style`;
+    enhancedPrompt = `${enhancedPrompt}, professional line art illustration with strong defined outlines, detailed linework with excellent edge definition, coloring book style with clear spaces for coloring`;
   } else if (model === "runware:flux-dev@1") {
     enhancedPrompt = `${enhancedPrompt}, professional line art illustration style with bold outlines`;
   } else if (model === "runware:100@1") {
