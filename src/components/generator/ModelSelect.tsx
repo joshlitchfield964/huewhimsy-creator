@@ -9,6 +9,7 @@ import {
 
 export const MODELS = [
   { label: "Stable Diffusion 3", value: "runware:100@1" },
+  { label: "Juggernaut Pro", value: "rundiffusion:130@100" },
   { label: "FLUX.1 [dev]", value: "runware:flux-dev@1" }
 ] as const;
 

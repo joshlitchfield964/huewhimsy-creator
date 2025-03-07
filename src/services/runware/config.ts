@@ -1,7 +1,7 @@
 
 export const API_ENDPOINT = "wss://ws-api.runware.ai/v1";
 
-export const DEFAULT_MODEL = "runware:100@1";
+export const DEFAULT_MODEL = "rundiffusion:130@100";
 export const DEFAULT_WIDTH = 1024;
 export const DEFAULT_HEIGHT = 1024;
 export const DEFAULT_OUTPUT_FORMAT = "WEBP";

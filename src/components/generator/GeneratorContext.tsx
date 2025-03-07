@@ -48,7 +48,7 @@ export function GeneratorProvider({ children }: { children: ReactNode }) {
   const [prompt, setPrompt] = useState("");
   const [resolution, setResolution] = useState({ width: 1024, height: 1024 });
   const [ageGroup, setAgeGroup] = useState<AgeGroup>("school");
-  const [model, setModel] = useState<typeof MODELS[number]["value"]>(MODELS[0].value);
+  const [model, setModel] = useState<typeof MODELS[number]["value"]>(MODELS[1].value); // Set to Juggernaut Pro (index 1)
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedImage, setGeneratedImage] = useState<string>("");
   const [freeGenerationAvailable, setFreeGenerationAvailable] = useState<boolean | null>(null);
